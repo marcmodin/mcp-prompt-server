@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "prompt-server": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "mcp-prompt-server"],
+      "env": {}
+    }
+  }
+}

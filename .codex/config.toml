@@ -1,0 +1,11 @@
+[history]
+persistence = "none"
+
+[mcp_servers.prompt-server]
+command = "uv"
+args = [
+    "run", 
+    "--directory", 
+    "/Users/marcmodin/Code/platform-orchestator/mcp-prompt-server",
+    "mcp-prompt-server"
+]
