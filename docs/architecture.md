@@ -381,7 +381,7 @@ The actual prompt content goes here. This can include:
 - **Logging**: No sensitive data in logs
 
 ## References
-
+- @docs/mcp-python-sdk.md
 - [MCP Python SDK Documentation](https://modelcontextprotocol.github.io/python-sdk/)
 - [MCP Specification](https://spec.modelcontextprotocol.io)
 - [FastMCP Framework](https://github.com/modelcontextprotocol/python-sdk)

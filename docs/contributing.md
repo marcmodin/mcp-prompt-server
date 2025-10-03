@@ -68,5 +68,7 @@ For bugs or feature requests that don't require immediate implementation:
 
 - Python >=3.11
 - Follow existing code patterns and security measures
-- See [architecture.md](architecture.md) for security requirements
+- See @docs/mcp-python-sdk.md for sdk related information
+- See @docs/architecture.md for security requirements
 - Use `uv` for dependency management
+- Conventional commits for structured commit messages

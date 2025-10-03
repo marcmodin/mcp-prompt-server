@@ -20,6 +20,11 @@
 - 🎯 **MCP Compliant** — Full implementation of MCP prompt primitives via FastMCP framework
 - 🌐 **Remote Installation** — Run directly from GitHub without cloning
 
+## 🔧 Requirements
+
+- Python >=3.11
+- Package manager: `uv` (installs automatically with `uvx`)
+
 ## Quick Start
 
 ### Using with Claude Cli
@@ -77,8 +82,3 @@ npx @modelcontextprotocol/inspector uvx --from git+https://github.com/marcmodin/
 - **[Architecture](docs/architecture.md)** — System design and security model
 - **[Contributing](docs/contributing.md)** — Development workflow and guidelines
 - **[Prompt Template](docs/prompt-template.md)** — Creating prompt files
-
-## 🔧 Requirements
-
-- Python >=3.11
-- Package manager: `uv` (installs automatically with `uvx`)

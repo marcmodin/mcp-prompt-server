@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "MCP server that exposes markdown files as prompts"
 readme = "README.md"
 authors = [
-    { name = "marc", email = "marcmodin@yahoo.com" }
+    { name = "marc", email = "info@example.com" }
 ]
 requires-python = ">=3.11"
 dependencies = [

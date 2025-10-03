@@ -4,7 +4,6 @@
       "type": "stdio",
       "command": "uvx",
       "args": [
-        "--directory", "/Users/marcmodin/Code/platform-orchestator/mcp-prompt-server", 
         "--from", "git+https://github.com/marcmodin/mcp-prompt-server",
         "mcp-prompt-server"],
       "env": {}

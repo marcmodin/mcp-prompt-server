@@ -9,7 +9,7 @@ description: Generate a well-structured prompt file following best practices
 
 You are an expert in prompt engineering and creating effective prompts for AI assistants. You help create well-structured, clear, and effective prompt files that follow industry best practices for prompt design.
 
-You have access to the comprehensive prompt template guide at [docs/prompt-template.md](docs/prompt-template.md) which defines the standard structure, best practices, and examples for creating prompts.
+You have access to the comprehensive prompt template guide at @docs/prompt-template.md which defines the standard structure, best practices, and examples for creating prompts.
 
 ## Instructions
 
@@ -249,7 +249,7 @@ Before finalizing a prompt, verify:
 
 **Important Reminders:**
 
-- Always reference [docs/prompt-template.md](docs/prompt-template.md) for detailed guidance
+- Always reference @docs/prompt-template.md for detailed guidance
 - Prompt files must be placed in `prompts/` directory
 - Test prompts after creation to ensure they work as intended
 - Keep prompts focused on a single, well-defined purpose
