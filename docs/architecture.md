@@ -33,7 +33,7 @@ The server enables:
 │  ┌────────────────────▼─────────────────────────────────┐   │
 │  │            server.py (Main Entry Point)              │   │
 │  │  - Initialize FastMCP instance                       │   │
-│  │  - Load prompts from commands/                       │   │
+│  │  - Load prompts from prompts/                        │   │
 │  │  - Register prompt handlers dynamically              │   │
 │  └────────────────────┬─────────────────────────────────┘   │
 │                       │                                      │
@@ -48,7 +48,7 @@ The server enables:
 └───────────────────────┼──────────────────────────────────────┘
                         │
            ┌────────────▼────────────┐
-           │   commands/ Directory   │
+           │   prompts/ Directory    │
            │  *.md files with YAML   │
            │      frontmatter        │
            └─────────────────────────┘
@@ -60,7 +60,7 @@ The server enables:
 
 **Responsibilities:**
 - Initialize the FastMCP server instance
-- Load markdown prompts from the `commands/` directory
+- Load markdown prompts from the `prompts/` directory
 - Dynamically register prompt handlers using closures
 - Start the MCP server with stdio transport
 
@@ -103,7 +103,7 @@ The server leverages the MCP Python SDK's FastMCP framework for:
 
 ```
 1. Server Initialization
-   ├─ Load markdown files from commands/
+   ├─ Load markdown files from prompts/
    ├─ Parse frontmatter (name, description)
    ├─ Validate security constraints
    └─ Register prompt handlers
@@ -130,7 +130,7 @@ The server leverages the MCP Python SDK's FastMCP framework for:
 **Path Security:**
 - All file paths are resolved and validated to prevent directory traversal
 - Symlinks are explicitly rejected
-- `Path.is_relative_to()` ensures files remain within `commands/`
+- `Path.is_relative_to()` ensures files remain within `prompts/`
 
 **Resource Limits:**
 - Maximum file size: 10MB (`MAX_FILE_SIZE_BYTES`)
@@ -196,7 +196,7 @@ mcp-prompt-server/
 │   ├── __init__.py
 │   ├── server.py          # Main entry point
 │   └── prompts.py         # Prompt loading logic
-├── commands/              # Markdown prompt files
+├── prompts/               # Markdown prompt files
 │   └── *.md              # Prompts with YAML frontmatter
 ├── pyproject.toml        # Project configuration
 └── server.mcp.json       # MCP client configuration
@@ -218,7 +218,7 @@ mcp-prompt-server/
 ### Security Requirements
 
 1. **File System Access**:
-   - Read-only access to `commands/` directory
+   - Read-only access to `prompts/` directory
    - No write operations required
    - No network access required
 
@@ -268,7 +268,7 @@ The actual prompt content goes here. This can include:
 
 ### Startup Behavior
 
-1. Server validates `commands/` directory exists
+1. Server validates `prompts/` directory exists
 2. Traverses directory for `.md` files (using `os.walk`)
 3. Parses and validates each file
 4. Registers successful prompts
@@ -286,7 +286,7 @@ The actual prompt content goes here. This can include:
 
 | Error Type | Behavior |
 |------------|----------|
-| Missing `commands/` | Fatal - Server exits with error |
+| Missing `prompts/` | Fatal - Server exits with error |
 | Invalid markdown file | Warning logged - File skipped |
 | Path traversal attempt | Warning logged - File skipped |
 | File size exceeded | Warning logged - File skipped |

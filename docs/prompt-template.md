@@ -1,11 +1,6 @@
----
-name: prompt-template
-description: Template and best practices for writing effective MCP prompts
----
-
 # Prompt Template & Best Practices
 
-This document provides a structured template for creating effective prompts in the MCP Prompt Server, following Claude's prompt engineering best practices.
+This document provides a structured template for creating effective prompts for any Ai agent, following Claude's prompt engineering best practices.
 
 ---
 
