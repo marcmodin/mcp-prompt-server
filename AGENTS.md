@@ -10,7 +10,11 @@ Agent instructions for working in this repository.
 
 **Run locally**: `uv run mcp-prompt-server`
 
-**Debug**: `npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server`
+**Run remotely**: `uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server`
+
+**Debug locally**: `npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server`
+
+**Debug remotely**: `npx @modelcontextprotocol/inspector uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server`
 
 ## Key Constraints
 

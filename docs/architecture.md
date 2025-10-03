@@ -202,7 +202,26 @@ mcp-prompt-server/
 └── server.mcp.json       # MCP client configuration
 ```
 
-**MCP Client Configuration** (`server.mcp.json`):
+**MCP Client Configuration**:
+
+For remote usage (recommended):
+```json
+{
+  "mcpServers": {
+    "prompt-server": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/marcmodin/mcp-prompt-server",
+        "mcp-prompt-server"
+      ]
+    }
+  }
+}
+```
+
+For local development:
 ```json
 {
   "mcpServers": {

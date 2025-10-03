@@ -8,15 +8,38 @@ A lightweight Model Context Protocol (MCP) server that dynamically exposes markd
 - **Zero Configuration**: Add prompts by simply creating markdown files with YAML frontmatter
 - **Security First**: Built-in path traversal protection, file size limits, and input validation
 - **MCP Compliant**: Full implementation of MCP prompt primitives via FastMCP framework
+- **Remote Installation**: Run directly from GitHub without cloning
 
 ## Quick Start
 
+### Using with Claude Desktop (Remote)
+
+Add this configuration to your Claude Desktop MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "prompt-server": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/marcmodin/mcp-prompt-server",
+        "mcp-prompt-server"
+      ]
+    }
+  }
+}
+```
+
+### Running Remotely
+
 ```bash
-# Run locally
-uv run mcp-prompt-server
+# Run directly from GitHub
+uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server
 
 # Debug with MCP Inspector
-npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server
+npx @modelcontextprotocol/inspector uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server
 ```
 
 ## Documentation
@@ -28,4 +51,4 @@ npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server
 ## Requirements
 
 - Python >=3.11
-- Package manager: `uv` (recommended) or `pip`
+- Package manager: `uv` (installs automatically with `uvx`)

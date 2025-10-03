@@ -1,10 +1,36 @@
 # Contributing Guide
 
+## Installation Options
+
+### Remote (Recommended for Users)
+
+Run directly from GitHub without cloning:
+
+```bash
+# Run from GitHub
+uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server
+
+# Debug from GitHub
+npx @modelcontextprotocol/inspector uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server
+```
+
+### Local (For Development)
+
+Clone the repository and run locally:
+
+```bash
+# Run locally
+uv run mcp-prompt-server
+
+# Debug locally
+npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server
+```
+
 ## Development Workflow
 
 ### Adding New Prompts
 
-1. Open project in Claude Code with the mcp loaded (see `prompt.mcp.json`)
+1. Open project in Claude Code with the mcp loaded (see `remote.mcp.json` for reference)
 2. Use `/prompt-server:create-prompt` and follow instructions to create a new prompt
 3. Restart Claude to reload the MCP server with the new prompt
 4. Test the prompt execution thoroughly
@@ -29,7 +55,7 @@ For bugs or feature requests that don't require immediate implementation:
 
 - **Prompt Testing**: Always test prompts thoroughly after creation and before committing
 - **Server Restart**: Remember that prompt changes require server restart to take effect
-- **MCP Inspector**: Use `npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server` for debugging
+- **MCP Inspector**: Use MCP Inspector for debugging (see commands above)
 
 ## Pull Request Guidelines
 
