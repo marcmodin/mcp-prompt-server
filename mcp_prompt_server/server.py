@@ -2,7 +2,7 @@
 """
 MCP Prompt Server - Python Implementation
 
-Loads markdown files from the commands directory and exposes them as MCP prompts.
+Loads markdown files from the prompts directory and exposes them as MCP prompts.
 
 """
 
@@ -16,8 +16,8 @@ from .prompts import load_markdown_prompts, sanitize_path_for_logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
-# Commands directory path
-COMMANDS_DIR = Path(__file__).parent.parent / "commands"
+# Prompts directory path
+PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
 
 
 def main() -> int:
@@ -25,7 +25,7 @@ def main() -> int:
 
     # Load prompts from directory
     try:
-        prompts_data = load_markdown_prompts(COMMANDS_DIR)
+        prompts_data = load_markdown_prompts(PROMPTS_DIR)
     except Exception as e:
         logger.error(f"Failed to load prompts: {e}")
         return 1

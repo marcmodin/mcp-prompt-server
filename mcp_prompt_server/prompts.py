@@ -123,10 +123,10 @@ def load_markdown_prompts(directory: Path) -> dict[str, tuple[str, str, str]]:
 
     # Validate directory exists
     if not dir_path.exists():
-        raise FileNotFoundError(f"Commands directory not found")
+        raise FileNotFoundError(f"Prompts directory not found")
 
     if not dir_path.is_dir():
-        raise NotADirectoryError(f"Commands path is not a directory")
+        raise NotADirectoryError(f"Prompts path is not a directory")
 
     prompts = {}
 
