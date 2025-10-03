@@ -1,20 +1,50 @@
-# MCP Prompt Server
+<div align="center">
 
-A lightweight Model Context Protocol (MCP) server that dynamically exposes markdown files as prompts to MCP-compatible clients like Claude Desktop.
+# 🚀 MCP Prompt Server
 
-## Features
+**A lightweight Model Context Protocol server for dynamic prompt management**
 
-- **Dynamic Prompt Loading**: Automatically discover and register markdown files from the `prompts/` directory
-- **Zero Configuration**: Add prompts by simply creating markdown files with YAML frontmatter
-- **Security First**: Built-in path traversal protection, file size limits, and input validation
-- **MCP Compliant**: Full implementation of MCP prompt primitives via FastMCP framework
-- **Remote Installation**: Run directly from GitHub without cloning
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![MCP](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+</div>
+
+---
+
+## ✨ Features
+
+- 📁 **Dynamic Prompt Loading** — Automatically discover and register markdown files from the `prompts/` directory
+- ⚡ **Zero Configuration** — Add prompts by simply creating markdown files with YAML frontmatter
+- 🔒 **Security First** — Built-in path traversal protection, file size limits, and input validation
+- 🎯 **MCP Compliant** — Full implementation of MCP prompt primitives via FastMCP framework
+- 🌐 **Remote Installation** — Run directly from GitHub without cloning
 
 ## Quick Start
 
-### Using with Claude Desktop (Remote)
+### Using with Claude Cli
 
-Add this configuration to your Claude Desktop MCP settings:
+Add this configuration to your Claude Cli MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "prompt-server": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/marcmodin/mcp-prompt-server",
+        "mcp-prompt-server"
+      ]
+    }
+  }
+}
+```
+
+### Using with GitHub Copilot
+
+Create `.vscode/mcp.json` in your project:
 
 ```json
 {
@@ -42,13 +72,13 @@ uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server
 npx @modelcontextprotocol/inspector uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server
 ```
 
-## Documentation
+## 📚 Documentation
 
-- [Architecture](docs/architecture.md) - System design and security model
-- [Contributing](docs/contributing.md) - Development workflow and guidelines
-- [Prompt Template](docs/prompt-template.md) - Creating prompt files
+- **[Architecture](docs/architecture.md)** — System design and security model
+- **[Contributing](docs/contributing.md)** — Development workflow and guidelines
+- **[Prompt Template](docs/prompt-template.md)** — Creating prompt files
 
-## Requirements
+## 🔧 Requirements
 
 - Python >=3.11
 - Package manager: `uv` (installs automatically with `uvx`)
