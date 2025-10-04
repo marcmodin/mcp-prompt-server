@@ -22,8 +22,8 @@ logger = logging.getLogger(__name__)
 
 # Security constants
 MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10MB limit for markdown files
-MAX_NAME_LENGTH = 200  # Maximum length for prompt name
-MAX_DESCRIPTION_LENGTH = 1000  # Maximum length for description
+MAX_NAME_LENGTH = 100  # Maximum length for prompt name (reasonable for UI display)
+MAX_DESCRIPTION_LENGTH = 200  # Maximum length for description (2-3 sentences)
 
 
 def validate_safe_name(name: str) -> None:
@@ -130,56 +130,54 @@ def load_markdown_prompts(directory: Path) -> dict[str, tuple[str, str, str]]:
 
     prompts = {}
 
-    # Walk through directory without following symlinks to avoid TOCTOU
-    for root, _, files in os.walk(dir_path, followlinks=False):
-        root_path = Path(root)
+    # Only load from top-level directory (no recursive traversal)
+    for filename in os.listdir(dir_path):
+        if not filename.endswith('.md'):
+            continue
 
-        for filename in files:
-            if not filename.endswith('.md'):
-                continue
+        md_file = dir_path / filename
 
-            md_file = root_path / filename
-
-            try:
-                # Resolve the file path and validate it's within the base directory
-                resolved_file = md_file.resolve()
-
-                # Security check: ensure resolved path is still within base directory
-                if not resolved_file.is_relative_to(dir_path):
-                    sanitized_path = sanitize_path_for_logging(md_file, dir_path)
-                    logger.warning(f"Skipping {sanitized_path}: path traversal detected")
-                    continue
-
-                # Check if it's a symlink (skip symlinks for security)
-                if md_file.is_symlink():
-                    sanitized_path = sanitize_path_for_logging(md_file, dir_path)
-                    logger.warning(f"Skipping {sanitized_path}: symlinks not allowed")
-                    continue
-
-                # Check file size before reading
-                file_size = md_file.stat().st_size
-                if file_size > MAX_FILE_SIZE_BYTES:
-                    sanitized_path = sanitize_path_for_logging(md_file, dir_path)
-                    logger.warning(f"Skipping {sanitized_path}: file exceeds size limit")
-                    continue
-
-                content = md_file.read_text(encoding='utf-8')
-
-                # Parse frontmatter to extract name, description, and body
-                name, description, body = parse_frontmatter(content)
-
-                prompts[name] = (description, body, str(md_file))
-
-            except (ValueError, OSError):
-                # Sanitize error message to avoid leaking sensitive paths
+        try:
+            # Check if it's a symlink (skip symlinks for security)
+            # IMPORTANT: Check BEFORE resolving to prevent TOCTOU attacks
+            if md_file.is_symlink():
                 sanitized_path = sanitize_path_for_logging(md_file, dir_path)
-                logger.warning(f"Failed to load {sanitized_path}: validation error")
+                logger.warning(f"Skipping {sanitized_path}: symlinks not allowed")
                 continue
-            except Exception:
-                # Generic error for unexpected issues
+
+            # Resolve the file path and validate it's within the base directory
+            resolved_file = md_file.resolve()
+
+            # Security check: ensure resolved path is still within base directory
+            if not resolved_file.is_relative_to(dir_path):
                 sanitized_path = sanitize_path_for_logging(md_file, dir_path)
-                logger.warning(f"Failed to load {sanitized_path}: unexpected error")
+                logger.warning(f"Skipping {sanitized_path}: path traversal detected")
                 continue
+
+            # Check file size before reading
+            file_size = md_file.stat().st_size
+            if file_size > MAX_FILE_SIZE_BYTES:
+                sanitized_path = sanitize_path_for_logging(md_file, dir_path)
+                logger.warning(f"Skipping {sanitized_path}: file exceeds size limit")
+                continue
+
+            content = md_file.read_text(encoding='utf-8')
+
+            # Parse frontmatter to extract name, description, and body
+            name, description, body = parse_frontmatter(content)
+
+            prompts[name] = (description, body, str(md_file))
+
+        except (ValueError, OSError):
+            # Sanitize error message to avoid leaking sensitive paths
+            sanitized_path = sanitize_path_for_logging(md_file, dir_path)
+            logger.warning(f"Failed to load {sanitized_path}: validation error")
+            continue
+        except Exception:
+            # Generic error for unexpected issues
+            sanitized_path = sanitize_path_for_logging(md_file, dir_path)
+            logger.warning(f"Failed to load {sanitized_path}: unexpected error")
+            continue
 
     if not prompts:
         raise ValueError(f"No valid .md files found")
