@@ -1,0 +1,227 @@
+name: Prompt Request
+description: Request a new prompt to be added to the prompt library
+title: "[Prompt]: "
+labels: ["prompt", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new prompt! This template will help gather the information needed to create a well-structured prompt file.
+
+  - type: input
+    id: prompt_name
+    attributes:
+      label: Prompt Name
+      description: A concise name for the prompt (alphanumeric, dashes, underscores, or spaces only, max 100 chars)
+      placeholder: "e.g., python-code-review or Security Audit Workflow"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Brief description of what this prompt does (max 200 characters, 2-3 sentences)
+      placeholder: "e.g., Review Python code for quality issues and best practices"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Prompt Complexity
+      description: Is this a simple or complex prompt?
+      options:
+        - Simple (single-phase task, straightforward input/output)
+        - Complex (multi-step workflow, conditional logic, structured output)
+    validations:
+      required: true
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose and Use Case
+      description: What problem does this prompt solve? Who will use it and why?
+      placeholder: |
+        - Target domain/use case
+        - Expected inputs
+        - Expected outputs
+        - Who benefits from this prompt
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context/Role
+      description: What role or perspective should the AI take? What domain knowledge is needed?
+      placeholder: "e.g., You are an experienced Python developer focused on code quality..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: instructions
+    attributes:
+      label: Instructions
+      description: What specific steps or actions should the AI perform?
+      placeholder: |
+        1. First step
+        2. Second step
+        3. Third step
+    validations:
+      required: true
+
+  - type: textarea
+    id: output_format
+    attributes:
+      label: Expected Output Format
+      description: How should the response be structured? Provide an example if possible.
+      placeholder: |
+        - Format structure (markdown, JSON, etc.)
+        - Required sections
+        - Example output
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints and Requirements
+      description: Any boundaries, limitations, or specific requirements?
+      placeholder: |
+        - What should be avoided
+        - Compliance requirements
+        - Technical constraints
+    validations:
+      required: false
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Example Scenarios
+      description: Provide example inputs/outputs or scenarios where this prompt would be used
+      placeholder: |
+        Example 1:
+        Input: [example input]
+        Expected Output: [example output]
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this prompt?
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+      default: 1
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other information, references, or resources
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        ## Implementation Guide (for developers/AI agents)
+
+        When implementing this prompt request, follow these steps:
+
+        ### 1. Review Requirements
+        - Read through all provided information above
+        - Identify if this is a simple or complex prompt (see Complexity field)
+        - Review the prompt template guide at `docs/prompt-template.md`
+
+        ### 2. Determine Structure
+
+        **For Simple Prompts:**
+        - Context (role and background)
+        - Instructions (clear steps)
+        - Reporting (output format)
+
+        **For Complex Prompts:**
+        - Context (comprehensive background)
+        - Variables (if reusable template)
+        - Instructions (detailed phases)
+        - Constraints (boundaries and requirements)
+        - Workflow (sequential steps with conditionals)
+        - Process (reasoning methodology)
+        - Reporting (structured output format)
+
+        ### 3. Create the File
+
+        **Location:** `prompts/[prompt-name].md`
+
+        **Filename Convention:** Use kebab-case matching the prompt name
+        - Example: "Python Code Review" → `python-code-review.md`
+        - Example: "security-audit" → `security-audit.md`
+
+        **Required Structure:**
+        ```yaml
+        ---
+        name: prompt-name-here
+        description: Brief description (max 200 chars)
+        ---
+
+        # Prompt Title
+
+        ## Context
+        [Role and background from issue]
+
+        ## Instructions
+        [Steps from issue, formatted clearly]
+
+        ## Reporting
+        [Output format from issue]
+
+        [Additional sections as needed based on complexity]
+        ```
+
+        ### 4. Validation Checklist
+
+        Before submitting, verify:
+        - [ ] YAML frontmatter is present with `name` and `description`
+        - [ ] Name is alphanumeric with dashes, underscores, or spaces only (max 100 chars)
+        - [ ] Description is max 200 characters
+        - [ ] File is placed in `prompts/` directory (top-level only)
+        - [ ] Filename uses kebab-case and matches prompt name
+        - [ ] Context clearly defines role/perspective
+        - [ ] Instructions are specific and actionable
+        - [ ] Markdown is used for primary structure
+        - [ ] XML tags used only when necessary (conditionals, critical warnings, data structures)
+        - [ ] Output format is clearly defined
+        - [ ] Examples included if task is complex or ambiguous
+        - [ ] File size is reasonable (well under 10MB limit)
+
+        ### 5. Testing
+
+        After implementation:
+        1. Test the prompt with sample inputs matching the use case
+        2. Verify outputs match the expected format
+        3. Refine based on results
+        4. Update the issue with results or questions
+
+        ### 6. Constraints to Remember
+
+        - File must be max 10MB (practical limit much smaller)
+        - No symlinks allowed for security reasons
+        - Prefer markdown over XML for structure
+        - Keep prompts focused on a single purpose
+        - Follow conventional commit format for commits
+
+        ### 7. Reference Documentation
+
+        - **Prompt Template Guide:** `docs/prompt-template.md`
+        - **Create Prompt Guide:** `prompts/create-prompt.md`
+        - **Contributing Guide:** `CONTRIBUTING.md`
