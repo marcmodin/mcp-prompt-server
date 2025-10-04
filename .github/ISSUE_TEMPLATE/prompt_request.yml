@@ -210,7 +210,6 @@ body:
         1. Test the prompt with sample inputs matching the use case
         2. Verify outputs match the expected format
         3. Refine based on results
-        4. Update the issue with results or questions
 
         ### 6. Constraints to Remember
 

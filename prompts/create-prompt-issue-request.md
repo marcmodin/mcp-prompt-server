@@ -28,6 +28,7 @@ Read the prompt request template at `.github/ISSUE_TEMPLATE/prompt_request.yml` 
 Ask the user questions based on the template fields in a natural, conversational manner:
 
 **Required Fields:**
+
 - **Prompt Name**: What should this prompt be called? (alphanumeric, dashes, underscores, or spaces only, max 100 chars)
 - **Description**: Brief description of what this prompt does (max 200 characters, 2-3 sentences)
 - **Complexity**: Is this a simple or complex prompt?
@@ -40,6 +41,7 @@ Ask the user questions based on the template fields in a natural, conversational
 - **Priority**: How important is this prompt? (Low/Medium/High/Critical)
 
 **Optional Fields:**
+
 - **Constraints and Requirements**: Any boundaries, limitations, or specific requirements?
 - **Example Scenarios**: Example inputs/outputs or scenarios where this prompt would be used
 - **Additional Context**: Any other information, references, or resources
@@ -47,6 +49,7 @@ Ask the user questions based on the template fields in a natural, conversational
 ### 4. Detect Repository Information
 
 Determine the GitHub repository:
+
 - First, try to detect from git remote: `git remote get-url origin`
 - If not available, ask the user for owner/repo
 
@@ -54,22 +57,26 @@ Determine the GitHub repository:
 
 Construct the issue body by combining the gathered information. For each field, use the format:
 
-```
+```markdown
 ### [Field Label]
 
 [User's response]
 ```
 
+**IMPORTANT**: After all the user-provided fields, you MUST append the Implementation Guide markdown section from the template. This section starts with `---` followed by `## Implementation Guide (for developers/AI agents)` and includes all subsections through the reference documentation. This guide is critical for developers and AI agents who will implement the prompt.
+
 ### 6. Determine Labels
 
 Apply appropriate labels:
-- Base labels: `prompt`, `enhancement`
+
+- Base labels: `prompt`
 - Priority labels: `priority-low`, `priority-medium`, `priority-high`, `priority-critical`
 
 ### 7. Construct Issue Title
 
 Use the template's title prefix and the prompt name:
-- Format: `[Prompt]: [prompt-name]`
+
+- Format: `[Prompt Request]: [prompt-name]`
 
 ### 8. Submit the Issue
 
@@ -78,9 +85,9 @@ Execute the GitHub CLI command:
 ```bash
 gh issue create \
   --repo [owner/repo] \
-  --title "[Prompt]: [prompt-name]" \
+  --title "[Prompt Request]: [prompt-name]" \
   --body "[Formatted Body]" \
-  --label "prompt,enhancement,priority-[level]"
+  --label "prompt,priority-[level]"
 ```
 
 ### 9. Report Success
@@ -91,7 +98,7 @@ After successful creation, provide issue details and URL.
 
 - Use only the GitHub CLI (`gh` command) for issue creation
 - Validate that `gh` is installed and authenticated before creating issues
-- Respect required vs optional fields from the template
+- Respect required vs optional fields from the template.
 - Format issue body with proper markdown headers for each field
 - Apply labels specified in the template YAML
 - If user skips optional fields, proceed without them
@@ -115,24 +122,25 @@ After successful creation, provide issue details and URL.
    - Optional: constraints, examples, additional context
 5. Detect repository from git remote or ask user
 6. Format issue body with markdown headers for each field
-7. Construct full title with `[Prompt]:` prefix
-8. Collect labels (prompt, enhancement, priority-*)
-9. Execute `gh issue create` with all parameters
-10. Report success with issue number and URL, or provide error guidance
+7. Extract and append the Implementation Guide section from the template (lines 132-227) to the issue body
+8. Construct full title with `[Prompt Request]:` prefix
+9. Collect labels (prompt, priority-*)
+10. Execute `gh issue create` with all parameters
+11. Report success with issue number and URL, or provide error guidance
 
 ## Reporting
 
 After successfully creating the issue:
 
-```
+```markdown
 ✓ Prompt Request Issue Created Successfully
 
-Issue #[number]: [Prompt]: [prompt-name]
+Issue #[number]: [Prompt request]: [prompt-name]
 Repository: [owner/repo]
 Type: Prompt Request
 Complexity: [Simple | Complex]
 Priority: [priority]
-Labels: prompt, enhancement, priority-[level]
+Labels: prompt, priority-[level]
 
 🔗 View issue: [URL]
 
@@ -144,7 +152,7 @@ Next Steps:
 
 If issue creation fails:
 
-```
+```markdown
 ✗ Failed to Create Prompt Request Issue
 
 Error: [Error message]
@@ -171,6 +179,7 @@ What should this prompt be called? (Use alphanumeric characters, dashes, undersc
 **User**: Review Python code for quality issues and best practices. Checks PEP 8 compliance and suggests improvements.
 
 **Assistant**: Is this a simple or complex prompt?
+
 1. Simple (single-phase task, straightforward input/output)
 2. Complex (multi-step workflow, conditional logic, structured output)
 
@@ -195,20 +204,22 @@ What should this prompt be called? (Use alphanumeric characters, dashes, undersc
 **Assistant**: How should the response be structured?
 
 **User**: Format with:
+
 - **Issue**: Description of the problem
 - **Location**: File and line number
 - **Suggestion**: Recommended fix with code example
 - **Priority**: High/Medium/Low
 
-**Assistant**: Any constraints or requirements? (optional, press Enter to skip)
+**Assistant**: Any constraints or requirements? (optional, type skip)
 
-**User**: [Enter]
+**User**: [skip]
 
 **Assistant**: Any example scenarios? (optional)
 
-**User**: [Enter]
+**User**: [skip]
 
 **Assistant**: What priority would you assign?
+
 - Low
 - Medium
 - High
@@ -218,20 +229,20 @@ What should this prompt be called? (Use alphanumeric characters, dashes, undersc
 
 **Assistant**: Any additional context? (optional)
 
-**User**: [Enter]
+**User**: [skip]
 
 [Assistant detects repository and creates issue using gh CLI]
 
 ✓ Prompt Request Issue Created Successfully
 
-Issue #15: [Prompt]: Python Code Review
+Issue #15: [Prompt Request]: Python Code Review
 Repository: marcmodin/mcp-prompt-server
 Type: Prompt Request
 Complexity: Simple
 Priority: Medium
-Labels: prompt, enhancement, priority-medium
+Labels: prompt, priority-medium
 
-🔗 View issue: https://github.com/marcmodin/mcp-prompt-server/issues/15
+🔗 View issue: [https://github.com/marcmodin/mcp-prompt-server/issues/15](https://github.com/marcmodin/mcp-prompt-server/issues/15)
 
 Next Steps:
 • A developer or AI agent will review your prompt request
@@ -251,6 +262,7 @@ What should this prompt be called?
 **User**: Comprehensive security audit for web applications with compliance requirements. Includes static analysis, vulnerability assessment, and remediation roadmap.
 
 **Assistant**: Is this a simple or complex prompt?
+
 1. Simple
 2. Complex
 
@@ -276,6 +288,7 @@ What should this prompt be called?
 **Assistant**: How should the response be structured?
 
 **User**: Multi-section report:
+
 - Executive Summary
 - Compliance Status (pass/fail with gaps)
 - Vulnerability Table (severity, CVSS, CWE)
@@ -302,14 +315,14 @@ What should this prompt be called?
 
 ✓ Prompt Request Issue Created Successfully
 
-Issue #16: [Prompt]: security-audit-workflow
+Issue #16: [Prompt Request]: security-audit-workflow
 Repository: marcmodin/mcp-prompt-server
 Type: Prompt Request
 Complexity: Complex
 Priority: High
-Labels: prompt, enhancement, priority-high
+Labels: prompt, priority-high
 
-🔗 View issue: https://github.com/marcmodin/mcp-prompt-server/issues/16
+🔗 View issue: [https://github.com/marcmodin/mcp-prompt-server/issues/16](https://github.com/marcmodin/mcp-prompt-server/issues/16)
 
 Next Steps:
 • A developer or AI agent will review your prompt request
