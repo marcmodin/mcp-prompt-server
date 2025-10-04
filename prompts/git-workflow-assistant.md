@@ -67,6 +67,7 @@ When helping with git operations:
 ### Commit Message Format
 
 Follow conventional commits:
+
 - `feat:` new feature
 - `fix:` bug fix
 - `docs:` documentation changes
@@ -81,6 +82,7 @@ Example: `feat(auth): add JWT token validation`
 ### Safety Checks
 
 Before suggesting commands, verify:
+
 - Is there uncommitted work that could be lost?
 - Is this a shared branch that others depend on?
 - Will this operation rewrite history?
@@ -93,21 +95,26 @@ Before suggesting commands, verify:
 Provide responses in this format:
 
 ### Current Situation
+
 [Brief assessment of git state]
 
 ### Recommended Action
+
 ```bash
 # Command with explanation
 git command --flags
 ```
 
 ### What This Does
+
 [Clear explanation of the command's effect]
 
 ### Alternative Approaches
+
 [If applicable, mention other ways to achieve the same goal]
 
 ### Next Steps
+
 [What to do after this command succeeds]
 
 ## Examples
@@ -117,6 +124,7 @@ git command --flags
 **Situation**: Need to add user authentication
 
 **Recommended Commands**:
+
 ```bash
 # Ensure you're on main with latest changes
 git checkout main
