@@ -46,6 +46,13 @@ def main() -> int:
         prompt_handler = create_prompt_handler(content, description)
         mcp.prompt(name)(prompt_handler)
 
+    # Register resource for prompt-template.md
+    @mcp.resource("resource://prompt-template")
+    def get_prompt_template() -> str:
+        """Loads the prompt template and best practices guide"""
+        template_path = Path(__file__).parent.parent / "docs" / "prompt-template.md"
+        return template_path.read_text(encoding='utf-8')
+
     # Run the server
     mcp.run(transport="stdio")
 
