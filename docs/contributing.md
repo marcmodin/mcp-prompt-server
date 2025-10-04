@@ -30,10 +30,39 @@ npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server
 
 ### Adding New Prompts
 
+There are three approaches for adding new prompts:
+
+#### Approach 1: Direct Implementation (Recommended for Contributors)
+
 1. Open project in Claude Code with the mcp loaded (see `remote.mcp.json` for reference)
 2. Use `/prompt-server:create-prompt` and follow instructions to create a new prompt
 3. Restart Claude to reload the MCP server with the new prompt
 4. Test the prompt execution thoroughly
+5. Commit changes using the git workflow
+
+#### Approach 2: AI-Assisted Prompt Request (Recommended for Users)
+
+Use the conversational prompt request assistant:
+
+1. Use `/prompt-server:create-prompt-issue-request` in Claude Code
+2. The assistant will guide you through providing all necessary information
+3. A GitHub issue will be created automatically with all details filled in
+4. A developer or AI agent can then implement the prompt based on the request
+
+#### Approach 3: Manual GitHub Issue (Alternative)
+
+Submit a prompt request directly on GitHub:
+
+1. Go to the [GitHub Issues](https://github.com/marcmodin/mcp-prompt-server/issues/new/choose) page
+2. Select "Prompt Request" template
+3. Fill in all required fields manually
+4. Submit the issue for review and implementation
+
+**When to use each approach:**
+
+- **Approach 1**: You have development access and want to implement immediately
+- **Approach 2**: You prefer guided, conversational workflow with validation
+- **Approach 3**: You prefer working directly in GitHub's web interface
 
 ### Code Changes & Commits
 
@@ -88,7 +117,7 @@ This project follows [Conventional Commits](https://www.conventionalcommits.org/
 
 **Format:**
 
-```
+```yaml
 <type>: <short description>
 
 <optional body>
