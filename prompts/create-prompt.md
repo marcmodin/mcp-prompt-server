@@ -34,19 +34,21 @@ When the user requests a new prompt, follow this process:
 
 4. **Validation**
    - Verify all required YAML frontmatter is present (name, description)
-   - Ensure name is valid (alphanumeric, dashes, underscores, spaces only)
+   - Ensure name is valid (alphanumeric, dashes, underscores, spaces only, max 100 chars)
+   - Check description length (max 200 characters)
    - Check that instructions are specific and actionable
    - Confirm output format is clearly defined
 
 ## Constraints
 
 - Prompt files MUST include YAML frontmatter with `name` and `description` fields
-- Name must be alphanumeric with dashes, underscores, or spaces only (no special characters)
-- Description should be concise (under 1000 characters)
+- Name must be alphanumeric with dashes, underscores, or spaces only (no special characters, max 100 characters)
+- Description should be concise (max 200 characters, ideally 2-3 sentences)
 - Prefer markdown over XML for structure
 - Use XML tags only for: conditional logic, critical warnings, data structures, nested hierarchies
 - Keep prompts focused and avoid unnecessary verbosity
 - File size should not exceed 10MB (practical limit much smaller)
+- No symlinks allowed for security reasons
 
 ## Workflow
 
@@ -234,7 +236,8 @@ Format your response with:
 Before finalizing a prompt, verify:
 
 - [ ] YAML frontmatter is complete and valid
-- [ ] Name follows naming conventions (alphanumeric, dashes, underscores, spaces)
+- [ ] Name follows naming conventions (alphanumeric, dashes, underscores, spaces, max 100 chars)
+- [ ] Description is concise (max 200 characters)
 - [ ] Context clearly defines the role or perspective
 - [ ] Instructions are specific and actionable
 - [ ] Markdown is used for primary structure
@@ -242,8 +245,9 @@ Before finalizing a prompt, verify:
 - [ ] Examples included for complex tasks
 - [ ] Output format is clearly defined
 - [ ] Constraints and boundaries are explicit
-- [ ] File will be saved in `prompts/` directory
+- [ ] File will be saved in `prompts/` directory (top-level only, no subdirectories)
 - [ ] Filename matches the prompt name (kebab-case)
+- [ ] No symlinks used
 
 ## Notes
 
