@@ -71,4 +71,45 @@ For bugs or feature requests that don't require immediate implementation:
 - See @docs/mcp-python-sdk.md for sdk related information
 - See @docs/architecture.md for security requirements
 - Use `uv` for dependency management
-- Conventional commits for structured commit messages
+
+### Commit Message Guidelines
+
+This project follows [Conventional Commits](https://www.conventionalcommits.org/) specification.
+
+**Supported Types:**
+
+- `feat:` - New feature or functionality
+- `fix:` - Bug fix or security patch
+- `docs:` - Documentation changes only
+- `refactor:` - Code refactoring without functional changes
+- `chore:` - Maintenance tasks (dependencies, config, etc.)
+- `ci:` - CI/CD pipeline changes
+- `revert:` - Revert a previous commit
+
+**Format:**
+
+```
+<type>: <short description>
+
+<optional body>
+
+<optional footer>
+```
+
+**Examples:**
+
+```bash
+feat: add support for subdirectory prompt organization
+fix: prevent path traversal in symlink resolution
+docs: update architecture with new security constraints
+refactor: simplify frontmatter parsing logic
+chore: update mcp sdk to v1.16.0
+```
+
+**Best Practices:**
+
+- Use imperative mood ("add" not "added")
+- Keep subject line under 72 characters
+- Separate subject from body with blank line
+- Use body to explain what and why, not how
+- Reference issues/PRs in footer when applicable
