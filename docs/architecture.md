@@ -31,14 +31,14 @@ The server enables:
 │  └────────────────────┬─────────────────────────────────┘   │
 │                       │                                      │
 │  ┌────────────────────▼─────────────────────────────────┐   │
-│  │            server.py (Main Entry Point)              │   │
-│  │  - Initialize FastMCP instance                       │   │
+│  │         src/server.py (Main Entry Point)             │   │
+│  │  - Initialize FastMCP instance ("file-prompts")      │   │
 │  │  - Load prompts from prompts/                        │   │
 │  │  - Register prompt handlers dynamically              │   │
 │  └────────────────────┬─────────────────────────────────┘   │
 │                       │                                      │
 │  ┌────────────────────▼─────────────────────────────────┐   │
-│  │     prompts.py (Prompt Processing Module)            │   │
+│  │     src/prompts.py (Prompt Processing Module)        │   │
 │  │  - Load markdown files                               │   │
 │  │  - Parse YAML frontmatter                            │   │
 │  │  - Validate security constraints                     │   │
@@ -56,15 +56,17 @@ The server enables:
 
 ### Component Architecture
 
-#### 1. **server.py** - Main Entry Point
+#### 1. **src/server.py** - Main Entry Point
 
 **Responsibilities:**
-- Initialize the FastMCP server instance
+
+- Initialize the FastMCP server instance with name "file-prompts"
 - Load markdown prompts from the `prompts/` directory
 - Dynamically register prompt handlers using closures
 - Start the MCP server with stdio transport
 
 **Key Design Patterns:**
+
 - **Closure Pattern**: Each prompt handler is created via closure to capture specific content and description
 - **Dynamic Registration**: Prompts are registered at runtime based on filesystem content
 
@@ -76,15 +78,17 @@ def create_prompt_handler(prompt_content: str, prompt_desc: str):
     return handler
 ```
 
-#### 2. **prompts.py** - Prompt Loading and Processing
+#### 2. **src/prompts.py** - Prompt Loading and Processing
 
 **Responsibilities:**
+
 - File system traversal and markdown file discovery
 - YAML frontmatter parsing
 - Security validation and input sanitization
 - Error handling and logging
 
 **Security Features:**
+
 - Path traversal protection
 - Symlink rejection
 - File size limits (10MB)
@@ -94,6 +98,7 @@ def create_prompt_handler(prompt_content: str, prompt_desc: str):
 #### 3. **FastMCP Framework Integration**
 
 The server leverages the MCP Python SDK's FastMCP framework for:
+
 - MCP protocol implementation
 - Transport handling (stdio)
 - Prompt registration and lifecycle management
@@ -128,14 +133,15 @@ The server leverages the MCP Python SDK's FastMCP framework for:
 ### 1. Security-First Design
 
 **Path Security:**
+
 - All file paths are resolved and validated to prevent directory traversal
 - Symlinks are explicitly rejected
 - `Path.is_relative_to()` ensures files remain within `prompts/`
 
 **Resource Limits:**
 - Maximum file size: 10MB (`MAX_FILE_SIZE_BYTES`)
-- Maximum name length: 200 characters
-- Maximum description length: 1000 characters
+- Maximum name length: 100 characters
+- Maximum description length: 200 characters
 
 **Input Validation:**
 - Prompt names restricted to: `[a-zA-Z0-9_-\s]`
@@ -192,14 +198,15 @@ npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server
 **File Structure:**
 ```
 mcp-prompt-server/
-├── mcp_prompt_server/
-│   ├── __init__.py
-│   ├── server.py          # Main entry point
+├── src/
+│   ├── __init__.py        # Package initialization
+│   ├── server.py          # Main entry point (main function)
 │   └── prompts.py         # Prompt loading logic
 ├── prompts/               # Markdown prompt files
-│   └── *.md              # Prompts with YAML frontmatter
-├── pyproject.toml        # Project configuration
-└── server.mcp.json       # MCP client configuration
+│   └── *.md               # Prompts with YAML frontmatter
+├── pyproject.toml         # Project configuration
+├── local.mcp.json         # MCP client config (local dev)
+└── remote.mcp.json        # MCP client config (remote)
 ```
 
 **MCP Client Configuration**:
@@ -274,8 +281,8 @@ The actual prompt content goes here. This can include:
 
 | Field | Required | Type | Max Length | Description |
 |-------|----------|------|------------|-------------|
-| `name` | Yes | String | 200 chars | Unique prompt identifier (alphanumeric, dash, underscore, space) |
-| `description` | Yes | String | 1000 chars | Human-readable description for MCP clients |
+| `name` | Yes | String | 100 chars | Unique prompt identifier (alphanumeric, dash, underscore, space) |
+| `description` | Yes | String | 200 chars | Human-readable description for MCP clients (2-3 sentences) |
 
 ### Content Processing
 
@@ -288,7 +295,7 @@ The actual prompt content goes here. This can include:
 ### Startup Behavior
 
 1. Server validates `prompts/` directory exists
-2. Traverses directory for `.md` files (using `os.walk`)
+2. Lists `.md` files in top-level directory only (using `os.listdir`)
 3. Parses and validates each file
 4. Registers successful prompts
 5. Logs warnings for invalid files
@@ -317,7 +324,7 @@ The actual prompt content goes here. This can include:
 ### Current Limitations
 
 1. **No Hot-Reload**: Changes to markdown files require server restart
-2. **Flat Directory Structure**: No recursive subdirectory scanning (though `os.walk` is used, suggesting future support)
+2. **Flat Directory Structure**: Only loads from top-level `prompts/` directory (no subdirectory scanning)
 3. **Startup-Only Loading**: Prompts loaded once at initialization
 4. **No Prompt Arguments**: Current implementation returns static content
 
