@@ -24,3 +24,7 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
 include = ["prompts", "resources"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"prompts" = "prompts"
+"resources" = "resources"

@@ -4,7 +4,7 @@
       "type": "stdio",
       "command": "uvx",
       "args": [
-        "--from", "git+https://github.com/marcmodin/mcp-prompt-server",
+        "--from", "git+https://github.com/marcmodin/mcp-prompt-server@v0.1.0",
         "mcp-prompt-server"],
       "env": {}
     }
