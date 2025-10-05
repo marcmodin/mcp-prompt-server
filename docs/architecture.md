@@ -34,24 +34,40 @@ The server enables:
 │  │         src/server.py (Main Entry Point)             │   │
 │  │  - Initialize FastMCP instance ("file-prompts")      │   │
 │  │  - Load prompts from prompts/                        │   │
-│  │  - Register prompt handlers dynamically              │   │
+│  │  - Load resources from resources/                    │   │
+│  │  - Register prompt/resource handlers dynamically     │   │
 │  └────────────────────┬─────────────────────────────────┘   │
 │                       │                                      │
 │  ┌────────────────────▼─────────────────────────────────┐   │
-│  │     src/prompts.py (Prompt Processing Module)        │   │
-│  │  - Load markdown files                               │   │
+│  │       src/prompts.py (Prompt Loading Module)         │   │
+│  │  - Load markdown prompt files                        │   │
+│  │  - Uses shared utils for validation                  │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │      src/resources.py (Resource Loading Module)      │   │
+│  │  - Load markdown resource documents                  │   │
+│  │  - Supports URI-style names (e.g., "docs/api")       │   │
+│  │  - Uses shared utils for validation                  │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │       src/utils.py (Shared Utilities Module)         │   │
+│  │  - Generic document loader (load_documents)          │   │
 │  │  - Parse YAML frontmatter                            │   │
 │  │  - Validate security constraints                     │   │
-│  │  - Return prompt data                                │   │
+│  │  - Path sanitization for logging                     │   │
 │  └────────────────────┬─────────────────────────────────┘   │
 │                       │                                      │
 └───────────────────────┼──────────────────────────────────────┘
                         │
-           ┌────────────▼────────────┐
-           │   prompts/ Directory    │
-           │  *.md files with YAML   │
-           │      frontmatter        │
-           └─────────────────────────┘
+           ┌────────────┴────────────┐
+           │                         │
+┌──────────▼──────────┐   ┌─────────▼──────────┐
+│  prompts/ Directory │   │ resources/ Directory│
+│ *.md files with YAML│   │ *.md files with YAML│
+│     frontmatter     │   │     frontmatter     │
+└─────────────────────┘   └────────────────────┘
 ```
 
 ### Component Architecture
@@ -62,7 +78,9 @@ The server enables:
 
 - Initialize the FastMCP server instance with name "file-prompts"
 - Load markdown prompts from the `prompts/` directory
-- Dynamically register prompt handlers using closures
+- Load markdown resources from the `resources/` directory
+- Dynamically register prompt and resource handlers using closures
+- Use `importlib.resources` for reliable path resolution (with fallback)
 - Start the MCP server with stdio transport
 
 **Key Design Patterns:**
@@ -78,24 +96,43 @@ def create_prompt_handler(prompt_content: str, prompt_desc: str):
     return handler
 ```
 
-#### 2. **src/prompts.py** - Prompt Loading and Processing
+#### 2. **src/prompts.py** - Prompt Loading Module
 
 **Responsibilities:**
 
-- File system traversal and markdown file discovery
-- YAML frontmatter parsing
-- Security validation and input sanitization
-- Error handling and logging
+- Load markdown files from `prompts/` directory using shared utilities
+- Wrapper around `load_documents()` with prompt-specific configuration
+- Enforces that no valid prompts results in fatal error
+
+#### 3. **src/resources.py** - Resource Loading Module
+
+**Responsibilities:**
+
+- Load markdown files from `resources/` directory using shared utilities
+- Supports URI-style names with forward slashes (e.g., "docs/api")
+- Configurable file size limit (can be larger than prompts if needed)
+- Returns empty dict if resources directory doesn't exist (non-fatal)
+
+#### 4. **src/utils.py** - Shared Utilities Module
+
+**Responsibilities:**
+
+- Generic document loading function (`load_documents()`)
+- YAML frontmatter parsing with security constraints
+- Path validation and sanitization for logging
+- Configurable file size limits per document type
 
 **Security Features:**
 
-- Path traversal protection
-- Symlink rejection
-- File size limits (10MB)
-- Input validation for names and descriptions
-- Sanitized logging
+- Path traversal protection via `Path.is_relative_to()`
+- Symlink rejection (checked before resolution to prevent TOCTOU)
+- Configurable file size limits (default: 10MB via `DEFAULT_MAX_FILE_SIZE_BYTES`)
+- Hard-coded name/description length limits (`MAX_NAME_LENGTH`, `MAX_DESCRIPTION_LENGTH`)
+- Input validation with configurable character restrictions
+- ReDoS prevention (frontmatter parsing limited to first 100 lines)
+- Sanitized logging to prevent information leakage
 
-#### 3. **FastMCP Framework Integration**
+#### 5. **FastMCP Framework Integration**
 
 The server leverages the MCP Python SDK's FastMCP framework for:
 
@@ -135,17 +172,20 @@ The server leverages the MCP Python SDK's FastMCP framework for:
 **Path Security:**
 
 - All file paths are resolved and validated to prevent directory traversal
-- Symlinks are explicitly rejected
-- `Path.is_relative_to()` ensures files remain within `prompts/`
+- Symlinks are explicitly rejected (before resolution to prevent TOCTOU)
+- `Path.is_relative_to()` ensures files remain within designated directories
+- `importlib.resources` used for reliable path resolution across installation types
 
 **Resource Limits:**
-- Maximum file size: 10MB (`MAX_FILE_SIZE_BYTES`)
-- Maximum name length: 100 characters
-- Maximum description length: 200 characters
+- Default maximum file size: 10MB (`DEFAULT_MAX_FILE_SIZE_BYTES`)
+- Configurable per document type (via `max_file_size` parameter)
+- Hard-coded maximum name length: 100 characters (`MAX_NAME_LENGTH`)
+- Hard-coded maximum description length: 200 characters (`MAX_DESCRIPTION_LENGTH`)
 
 **Input Validation:**
 - Prompt names restricted to: `[a-zA-Z0-9_-\s]`
-- No path traversal sequences allowed
+- Resource names allow forward slashes for URIs: `[a-zA-Z0-9_-\s/]`
+- No path traversal sequences (`..`, `\`) allowed
 - YAML frontmatter parsing limited to first 100 lines (DoS prevention)
 
 **Logging Security:**
@@ -201,9 +241,13 @@ mcp-prompt-server/
 ├── src/
 │   ├── __init__.py        # Package initialization
 │   ├── server.py          # Main entry point (main function)
-│   └── prompts.py         # Prompt loading logic
+│   ├── prompts.py         # Prompt loading logic
+│   ├── resources.py       # Resource loading logic
+│   └── utils.py           # Shared utilities (validation, parsing)
 ├── prompts/               # Markdown prompt files
 │   └── *.md               # Prompts with YAML frontmatter
+├── resources/             # Markdown resource documents
+│   └── *.md               # Resources with YAML frontmatter
 ├── pyproject.toml         # Project configuration
 ├── local.mcp.json         # MCP client config (local dev)
 └── remote.mcp.json        # MCP client config (remote)
