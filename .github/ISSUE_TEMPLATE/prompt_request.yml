@@ -2,6 +2,8 @@ name: Prompt Request
 description: Request a new prompt to be added to the prompt library
 title: "[Prompt Request]: "
 labels: ["prompt"]
+assignees:
+  - marcmodin
 body:
   - type: markdown
     attributes:
@@ -139,33 +141,33 @@ body:
         When implementing this prompt request, follow these steps:
 
         ### 1. Review Requirements
-        - Read through all provided information above
-        - Identify if this is a simple or complex prompt (see Complexity field)
-        - Review the prompt template guide at `docs/prompt-template.md`
+          - Read through all provided information above
+          - Identify if this is a simple or complex prompt (see Complexity field)
+          - Review the prompt template guide at `docs/prompt-template.md`
 
         ### 2. Determine Structure
 
         **For Simple Prompts:**
-        - Context (role and background)
-        - Instructions (clear steps)
-        - Reporting (output format)
+          - Context (role and background)
+          - Instructions (clear steps)
+          - Reporting (output format)
 
         **For Complex Prompts:**
-        - Context (comprehensive background)
-        - Variables (if reusable template)
-        - Instructions (detailed phases)
-        - Constraints (boundaries and requirements)
-        - Workflow (sequential steps with conditionals)
-        - Process (reasoning methodology)
-        - Reporting (structured output format)
+          - Context (comprehensive background)
+          - Variables (if reusable template)
+          - Instructions (detailed phases)
+          - Constraints (boundaries and requirements)
+          - Workflow (sequential steps with conditionals)
+          - Process (reasoning methodology)
+          - Reporting (structured output format)
 
         ### 3. Create the File
 
         **Location:** `prompts/[prompt-name].md`
 
         **Filename Convention:** Use kebab-case matching the prompt name
-        - Example: "Python Code Review" → `python-code-review.md`
-        - Example: "security-audit" → `security-audit.md`
+          - Example: "Python Code Review" → `python-code-review.md`
+          - Example: "security-audit" → `security-audit.md`
 
         **Required Structure:**
         ```yaml
@@ -189,7 +191,7 @@ body:
         ```
 
         ### 4. Validation Checklist
-
+        ```markdown
         Before submitting, verify:
         - [ ] YAML frontmatter is present with `name` and `description`
         - [ ] Name is alphanumeric with dashes, underscores, or spaces only (max 100 chars)
@@ -203,24 +205,24 @@ body:
         - [ ] Output format is clearly defined
         - [ ] Examples included if task is complex or ambiguous
         - [ ] File size is reasonable (well under 10MB limit)
-
+        ```
         ### 5. Testing
 
         After implementation:
-        1. Test the prompt with sample inputs matching the use case
-        2. Verify outputs match the expected format
-        3. Refine based on results
+          1. Test the prompt with sample inputs matching the use case
+          2. Verify outputs match the expected format
+          3. Refine based on results
 
         ### 6. Constraints to Remember
 
-        - File must be max 10MB (practical limit much smaller)
-        - No symlinks allowed for security reasons
-        - Prefer markdown over XML for structure
-        - Keep prompts focused on a single purpose
-        - Follow conventional commit format for commits
+          - File must be max 10MB (practical limit much smaller)
+          - No symlinks allowed for security reasons
+          - Prefer markdown over XML for structure
+          - Keep prompts focused on a single purpose
+          - Follow conventional commit format for commits
 
         ### 7. Reference Documentation
 
-        - **Prompt Template Guide:** `docs/prompt-template.md`
-        - **Create Prompt Guide:** `prompts/create-prompt.md`
-        - **Contributing Guide:** `CONTRIBUTING.md`
+          - **Prompt Template Guide:** `docs/prompt-template.md`
+          - **Create Prompt Guide:** `prompts/create-prompt.md`
+          - **Contributing Guide:** `docs/contributing.md`
