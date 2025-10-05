@@ -15,9 +15,10 @@
 ## ✨ Features
 
 - 📁 **Dynamic Prompt Loading** — Automatically discover and register markdown files from the `prompts/` directory
-- ⚡ **Zero Configuration** — Add prompts by simply creating markdown files with YAML frontmatter
+- 📚 **Resource Management** — Serve documentation and reference materials via MCP resources
+- ⚡ **Zero Configuration** — Add prompts and resources by simply creating markdown files with YAML frontmatter
 - 🔒 **Security First** — Built-in path traversal protection, file size limits, and input validation
-- 🎯 **MCP Compliant** — Full implementation of MCP prompt primitives via FastMCP framework
+- 🎯 **MCP Compliant** — Full implementation of MCP prompt and resource primitives via FastMCP framework
 - 🌐 **Remote Installation** — Run directly from GitHub without cloning
 
 ## 🔧 Requirements
@@ -81,4 +82,4 @@ npx @modelcontextprotocol/inspector uvx --from git+https://github.com/marcmodin/
 
 - **[Architecture](docs/architecture.md)** — System design and security model
 - **[Contributing](docs/contributing.md)** — Development workflow and guidelines
-- **[Prompt Template](docs/prompt-template.md)** — Creating prompt files
+- **[Prompt Template](resources/prompt-template.md)** — Creating prompt files
