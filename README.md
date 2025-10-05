@@ -72,10 +72,10 @@ Create `.vscode/mcp.json` in your project:
 
 ```bash
 # Run directly from GitHub
-uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server
+uvx --from git+https://github.com/marcmodin/mcp-prompt-server@v0.1.0 mcp-prompt-server
 
 # Debug with MCP Inspector
-npx @modelcontextprotocol/inspector uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server
+npx @modelcontextprotocol/inspector uvx --from git+https://github.com/marcmodin/mcp-prompt-server@v0.1.0 mcp-prompt-server
 ```
 
 ## 📚 Documentation
