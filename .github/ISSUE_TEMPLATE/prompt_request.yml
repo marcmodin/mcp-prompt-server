@@ -1,7 +1,7 @@
 name: Prompt Request
 description: Request a new prompt to be added to the prompt library
-title: "[Prompt]: "
-labels: ["prompt", "enhancement"]
+title: "[Prompt Request]: "
+labels: ["prompt"]
 body:
   - type: markdown
     attributes:
