@@ -23,28 +23,112 @@ Explain that you'll help create a prompt request issue and gather the necessary 
 
 Read the prompt request template at `.github/ISSUE_TEMPLATE/prompt_request.yml` to understand all required and optional fields.
 
-### 3. Gather Information Conversationally
+### 3. Gather Information in Chunks
 
-Ask the user questions based on the template fields in a natural, conversational manner:
+Ask the user questions in three groups to make the process faster and more efficient. Use the XML structure below to organize the data collection:
 
-**Required Fields:**
+<group id="1" name="Basic Information" required="true">
+  <description>
+  Ask all these questions together and let the user provide all answers in one response.
+  </description>
 
-- **Prompt Name**: What should this prompt be called? (alphanumeric, dashes, underscores, or spaces only, max 100 chars)
-- **Description**: Brief description of what this prompt does (max 200 characters, 2-3 sentences)
-- **Complexity**: Is this a simple or complex prompt?
-  - Simple: single-phase task, straightforward input/output
-  - Complex: multi-step workflow, conditional logic, structured output
-- **Purpose and Use Case**: What problem does this solve? Who will use it and why?
-- **Context/Role**: What role or perspective should the AI take? What domain knowledge is needed?
-- **Instructions**: What specific steps or actions should the AI perform?
-- **Expected Output Format**: How should the response be structured?
-- **Priority**: How important is this prompt? (Low/Medium/High/Critical)
+  <questions>
+    <question id="prompt_name" required="true">
+      <label>Prompt Name</label>
+      <prompt>What should this prompt be called?</prompt>
+      <validation>
+        - Alphanumeric, dashes, underscores, or spaces only
+        - Maximum 100 characters
+      </validation>
+    </question>
 
-**Optional Fields:**
+    <question id="description" required="true">
+      <label>Description</label>
+      <prompt>Brief description of what this prompt does (max 200 characters, 2-3 sentences)</prompt>
+      <validation>
+        - Maximum 200 characters
+      </validation>
+    </question>
 
-- **Constraints and Requirements**: Any boundaries, limitations, or specific requirements?
-- **Example Scenarios**: Example inputs/outputs or scenarios where this prompt would be used
-- **Additional Context**: Any other information, references, or resources
+    <question id="complexity" required="true">
+      <label>Complexity</label>
+      <prompt>Is this a simple or complex prompt?</prompt>
+      <options>
+        - Simple: single-phase task, straightforward input/output
+        - Complex: multi-step workflow, conditional logic, structured output
+      </options>
+    </question>
+
+    <question id="priority" required="true">
+      <label>Priority</label>
+      <prompt>How important is this prompt?</prompt>
+      <options>
+        - Low
+        - Medium
+        - High
+        - Critical
+      </options>
+    </question>
+  </questions>
+
+  <post_validation>
+    - Check prompt name: length ≤ 100 chars and only alphanumeric, dashes, underscores, or spaces
+    - Check description: length ≤ 200 chars
+    - If invalid, ask user to revise the specific field(s)
+  </post_validation>
+</group>
+
+<group id="2" name="Purpose and Implementation" required="true">
+  <description>
+  Ask all these questions together and let the user provide all answers in one response.
+  </description>
+
+  <questions>
+    <question id="purpose" required="true">
+      <label>Purpose and Use Case</label>
+      <prompt>What problem does this solve? Who will use it and why?</prompt>
+    </question>
+
+    <question id="context_role" required="true">
+      <label>Context/Role</label>
+      <prompt>What role or perspective should the AI take? What domain knowledge is needed?</prompt>
+    </question>
+
+    <question id="instructions" required="true">
+      <label>Instructions</label>
+      <prompt>What specific steps or actions should the AI perform?</prompt>
+    </question>
+
+    <question id="output_format" required="true">
+      <label>Expected Output Format</label>
+      <prompt>How should the response be structured?</prompt>
+    </question>
+  </questions>
+</group>
+
+<group id="3" name="Optional Details" required="false">
+  <description>
+  Ask all these questions together and let the user provide answers in one response (or skip all).
+  Inform the user these are optional and they can skip any or all of them.
+  </description>
+
+  <questions>
+    <question id="constraints" required="false">
+      <label>Constraints and Requirements</label>
+      <prompt>Any boundaries, limitations, or specific requirements? (optional)</prompt>
+    </question>
+
+    <question id="examples" required="false">
+      <label>Example Scenarios</label>
+      <prompt>Example inputs/outputs or scenarios where this prompt would be used? (optional)</prompt>
+    </question>
+
+    <question id="additional" required="false">
+      <label>Additional Context</label>
+      <prompt>Any other information, references, or resources? (optional)</prompt>
+    </question>
+  </questions>
+</group>
 
 ### 4. Detect Repository Information
 
@@ -78,7 +162,27 @@ Use the template's title prefix and the prompt name:
 
 - Format: `[Prompt Request]: [prompt-name]`
 
-### 8. Submit the Issue
+### 8. Preview the Issue
+
+Before submitting, show the user a preview of the complete issue that will be created:
+
+```markdown
+**Preview of Issue to be Created:**
+
+Title: [Prompt Request]: [prompt-name]
+Repository: [owner/repo]
+Labels: prompt, priority-[level]
+
+---
+[Full formatted body with all sections]
+---
+
+Proceed with creating this issue? (yes/no)
+```
+
+Wait for user confirmation before proceeding to submission.
+
+### 9. Submit the Issue
 
 Execute the GitHub CLI command:
 
@@ -90,7 +194,7 @@ gh issue create \
   --label "prompt,priority-[level]"
 ```
 
-### 9. Report Success
+### 10. Report Success
 
 After successful creation, provide issue details and URL.
 
@@ -110,23 +214,22 @@ After successful creation, provide issue details and URL.
 1. Introduce the prompt request process
 2. Read the prompt request template from `.github/ISSUE_TEMPLATE/prompt_request.yml`
 3. Extract required and optional fields from the template
-4. Ask questions conversationally to gather field values:
-   - Prompt name (validate format and length)
-   - Description (validate length)
-   - Complexity level (simple or complex)
-   - Purpose and use case
-   - Context/role
-   - Instructions
-   - Expected output format
-   - Priority
-   - Optional: constraints, examples, additional context
-5. Detect repository from git remote or ask user
-6. Format issue body with markdown headers for each field
-7. Extract and append the Implementation Guide section from the template (lines 132-227) to the issue body
-8. Construct full title with `[Prompt Request]:` prefix
-9. Collect labels (prompt, priority-*)
-10. Execute `gh issue create` with all parameters
-11. Report success with issue number and URL, or provide error guidance
+4. **Group 1**: Ask for basic information (name, description, complexity, priority) in one request
+   - Validate prompt name (format and length ≤ 100 chars)
+   - Validate description (length ≤ 200 chars)
+   - If invalid, ask user to revise specific fields
+5. **Group 2**: Ask for purpose and implementation details (purpose, context/role, instructions, output format) in one request
+6. **Group 3**: Ask for optional details (constraints, examples, additional context) in one request
+   - User can skip any or all optional fields
+7. Detect repository from git remote or ask user
+8. Format issue body with markdown headers for each field
+9. Extract and append the Implementation Guide section from the template (lines 132-226) to the issue body
+10. Construct full title with `[Prompt Request]:` prefix
+11. Collect labels (prompt, priority-*)
+12. Show preview of complete issue to user
+13. Wait for user confirmation
+14. Execute `gh issue create` with all parameters
+15. Report success with issue number and URL, or provide error guidance
 
 ## Reporting
 
@@ -166,70 +269,50 @@ Troubleshooting:
 
 ## Examples
 
-### Example 1: Simple Code Review Prompt
+### Example 1: Simple Code Review Prompt (Chunked Approach)
 
-**Assistant**: I'll help you create a Prompt Request issue. Let me ask you a few questions to gather the necessary information.
+**Assistant**: I'll help you create a Prompt Request issue. I'll gather the information in 3 quick groups.
 
-What should this prompt be called? (Use alphanumeric characters, dashes, underscores, or spaces only, max 100 chars)
+**Group 1 - Basic Information**
 
-**User**: Python Code Review
+Please provide:
+1. **Prompt Name**: What should this prompt be called? (alphanumeric, dashes, underscores, spaces only, max 100 chars)
+2. **Description**: Brief description (max 200 characters)
+3. **Complexity**: Simple or Complex?
+4. **Priority**: Low, Medium, High, or Critical?
 
-**Assistant**: Great! Now provide a brief description of what this prompt does (max 200 characters, 2-3 sentences)
+**User**:
+1. Python Code Review
+2. Review Python code for quality issues and best practices. Checks PEP 8 compliance and suggests improvements.
+3. Simple
+4. Medium
 
-**User**: Review Python code for quality issues and best practices. Checks PEP 8 compliance and suggests improvements.
+**Assistant**: Great! All validated successfully.
 
-**Assistant**: Is this a simple or complex prompt?
+**Group 2 - Purpose and Implementation**
 
-1. Simple (single-phase task, straightforward input/output)
-2. Complex (multi-step workflow, conditional logic, structured output)
+Please provide:
+1. **Purpose and Use Case**: What problem does this solve? Who will use it and why?
+2. **Context/Role**: What role or perspective should the AI take?
+3. **Instructions**: What specific steps or actions should the AI perform?
+4. **Expected Output Format**: How should the response be structured?
 
-**User**: Simple
+**User**:
+1. Helps developers get quick code quality feedback without setting up linters. Useful for PR reviews and learning.
+2. You are an experienced Python developer focused on code quality, readability, and best practices.
+3. 1) Review the provided Python code 2) Identify potential bugs or anti-patterns 3) Check for PEP 8 compliance 4) Suggest improvements for readability and maintainability 5) Provide specific code examples for recommendations
+4. Format with: **Issue** (description), **Location** (file and line), **Suggestion** (fix with code example), **Priority** (High/Medium/Low)
 
-**Assistant**: What problem does this solve? Who will use it and why?
+**Assistant**: Perfect!
 
-**User**: Helps developers get quick code quality feedback without setting up linters. Useful for PR reviews and learning.
+**Group 3 - Optional Details**
 
-**Assistant**: What role or perspective should the AI take? What domain knowledge is needed?
+These are optional. Please provide any of the following, or type "skip":
+1. **Constraints and Requirements**: Any boundaries, limitations, or specific requirements?
+2. **Example Scenarios**: Example inputs/outputs or scenarios?
+3. **Additional Context**: Any other information or references?
 
-**User**: You are an experienced Python developer focused on code quality, readability, and best practices.
-
-**Assistant**: What specific steps or actions should the AI perform?
-
-**User**: 1. Review the provided Python code
-2. Identify potential bugs or anti-patterns
-3. Check for PEP 8 compliance
-4. Suggest improvements for readability and maintainability
-5. Provide specific code examples for recommendations
-
-**Assistant**: How should the response be structured?
-
-**User**: Format with:
-
-- **Issue**: Description of the problem
-- **Location**: File and line number
-- **Suggestion**: Recommended fix with code example
-- **Priority**: High/Medium/Low
-
-**Assistant**: Any constraints or requirements? (optional, type skip)
-
-**User**: [skip]
-
-**Assistant**: Any example scenarios? (optional)
-
-**User**: [skip]
-
-**Assistant**: What priority would you assign?
-
-- Low
-- Medium
-- High
-- Critical
-
-**User**: Medium
-
-**Assistant**: Any additional context? (optional)
-
-**User**: [skip]
+**User**: skip
 
 [Assistant detects repository and creates issue using gh CLI]
 
@@ -249,69 +332,55 @@ Next Steps:
 • Implementation will follow the guidelines in the issue template
 • The prompt will be created in prompts/python-code-review.md
 
-### Example 2: Complex Security Audit Prompt
+### Example 2: Complex Security Audit Prompt (Chunked Approach)
 
-**Assistant**: I'll help you create a Prompt Request issue. Let me ask you a few questions to gather the necessary information.
+**Assistant**: I'll help you create a Prompt Request issue. I'll gather the information in 3 quick groups.
 
-What should this prompt be called?
+**Group 1 - Basic Information**
 
-**User**: security-audit-workflow
+Please provide:
+1. **Prompt Name**: What should this prompt be called? (alphanumeric, dashes, underscores, spaces only, max 100 chars)
+2. **Description**: Brief description (max 200 characters)
+3. **Complexity**: Simple or Complex?
+4. **Priority**: Low, Medium, High, or Critical?
 
-**Assistant**: Provide a brief description (max 200 characters)
+**User**:
+1. security-audit-workflow
+2. Comprehensive security audit for web applications with compliance requirements. Includes static analysis, vulnerability assessment, and remediation roadmap.
+3. Complex
+4. High
 
-**User**: Comprehensive security audit for web applications with compliance requirements. Includes static analysis, vulnerability assessment, and remediation roadmap.
+**Assistant**: Description is 165 characters - perfect! All validated successfully.
 
-**Assistant**: Is this a simple or complex prompt?
+**Group 2 - Purpose and Implementation**
 
-1. Simple
-2. Complex
+Please provide:
+1. **Purpose and Use Case**: What problem does this solve? Who will use it and why?
+2. **Context/Role**: What role or perspective should the AI take?
+3. **Instructions**: What specific steps or actions should the AI perform?
+4. **Expected Output Format**: How should the response be structured?
 
-**User**: Complex
+**User**:
+1. Security teams need systematic auditing with compliance tracking. Helps identify vulnerabilities and create actionable remediation plans for OWASP Top 10 and compliance standards.
+2. You are a security engineer with expertise in application security, penetration testing, and compliance frameworks (OWASP, PCI-DSS, SOC 2).
+3. 1) Perform static code analysis for security vulnerabilities 2) Check compliance against specified standard (OWASP, PCI-DSS, etc.) 3) Identify exploitable vulnerabilities 4) Assess risk and severity 5) Generate detailed findings with remediation steps 6) Create executive summary
+4. Multi-section report: Executive Summary, Compliance Status (pass/fail with gaps), Vulnerability Table (severity, CVSS, CWE), Detailed Findings (description, impact, proof of concept, remediation), Remediation Roadmap (prioritized action plan)
 
-**Assistant**: What problem does this solve? Who will use it and why?
+**Assistant**: Excellent!
 
-**User**: Security teams need systematic auditing with compliance tracking. Helps identify vulnerabilities and create actionable remediation plans for OWASP Top 10 and compliance standards.
+**Group 3 - Optional Details**
 
-**Assistant**: What role or perspective should the AI take?
+These are optional. Please provide any of the following, or type "skip":
+1. **Constraints and Requirements**: Any boundaries, limitations, or specific requirements?
+2. **Example Scenarios**: Example inputs/outputs or scenarios?
+3. **Additional Context**: Any other information or references?
 
-**User**: You are a security engineer with expertise in application security, penetration testing, and compliance frameworks (OWASP, PCI-DSS, SOC 2).
+**User**:
+1. Focus on exploitable vulnerabilities only. Follow OWASP Top 10. Provide actionable remediation with code examples. No theoretical vulnerabilities.
+2. Example: Audit e-commerce web app for PCI-DSS compliance. Check for SQL injection, XSS, authentication flaws. Generate report with critical findings first.
+3. Include references to CWE database and OWASP guides. Should work with multiple languages (Python, JavaScript, Java).
 
-**Assistant**: What specific steps or actions should the AI perform?
-
-**User**: 1. Perform static code analysis for security vulnerabilities
-2. Check compliance against specified standard (OWASP, PCI-DSS, etc.)
-3. Identify exploitable vulnerabilities
-4. Assess risk and severity
-5. Generate detailed findings with remediation steps
-6. Create executive summary
-
-**Assistant**: How should the response be structured?
-
-**User**: Multi-section report:
-
-- Executive Summary
-- Compliance Status (pass/fail with gaps)
-- Vulnerability Table (severity, CVSS, CWE)
-- Detailed Findings (description, impact, proof of concept, remediation)
-- Remediation Roadmap (prioritized action plan)
-
-**Assistant**: Any constraints or requirements?
-
-**User**: Focus on exploitable vulnerabilities only. Follow OWASP Top 10. Provide actionable remediation with code examples. No theoretical vulnerabilities.
-
-**Assistant**: Any example scenarios?
-
-**User**: Example: Audit e-commerce web app for PCI-DSS compliance. Check for SQL injection, XSS, authentication flaws. Generate report with critical findings first.
-
-**Assistant**: What priority?
-
-**User**: High
-
-**Assistant**: Any additional context?
-
-**User**: Include references to CWE database and OWASP guides. Should work with multiple languages (Python, JavaScript, Java).
-
-[Assistant creates issue]
+[Assistant detects repository and creates issue using gh CLI]
 
 ✓ Prompt Request Issue Created Successfully
 
