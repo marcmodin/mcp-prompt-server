@@ -2,12 +2,11 @@
 	"servers": {
 		"prompt-server": {
 			"type": "stdio",
-			"command": "uv",
+			"command": "uvx",
 			"args": [
-				"run",
+				"--from", "git+https://github.com/marcmodin/mcp-prompt-server@v0.1.0",
 				"mcp-prompt-server"
-			]
+			],
 		}
-	},
-	"inputs": []
+	}
 }

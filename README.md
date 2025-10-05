@@ -40,7 +40,7 @@ Add this configuration to your Claude Cli MCP settings:
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/marcmodin/mcp-prompt-server",
+        "git+https://github.com/marcmodin/mcp-prompt-server@v0.1.0",
         "mcp-prompt-server"
       ]
     }
@@ -60,7 +60,7 @@ Create `.vscode/mcp.json` in your project:
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/marcmodin/mcp-prompt-server",
+        "git+https://github.com/marcmodin/mcp-prompt-server@v0.1.0r",
         "mcp-prompt-server"
       ]
     }
