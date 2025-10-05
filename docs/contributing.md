@@ -34,8 +34,8 @@ There are three approaches for adding new prompts:
 
 #### Approach 1: Direct Implementation (Recommended for Contributors)
 
-1. Open project in Claude Code with the mcp loaded (see `remote.mcp.json` for reference)
-2. Use `/prompt-server:create-prompt` and follow instructions to create a new prompt
+1. Open project in Claude Code
+2. Use `/create-prompt` (claude command) and follow instructions to create a new prompt
 3. Restart Claude to reload the MCP server with the new prompt
 4. Test the prompt execution thoroughly
 5. Commit changes using the git workflow
@@ -44,7 +44,7 @@ There are three approaches for adding new prompts:
 
 Use the conversational prompt request assistant:
 
-1. Use `/prompt-server:create-prompt-issue-request` in Claude Code
+1. Use `/create-prompt-issue-request` (claude command) in Claude Code
 2. The assistant will guide you through providing all necessary information
 3. A GitHub issue will be created automatically with all details filled in
 4. A developer or AI agent can then implement the prompt based on the request
