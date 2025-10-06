@@ -94,6 +94,12 @@ def main() -> int:
         resource_handler = create_resource_handler(content, description)
         mcp.resource(f"resource://{name}", name=name)(resource_handler)
 
+    # Register ping tool
+    @mcp.tool()
+    def ping() -> str:
+        """Simple ping tool that returns pong"""
+        return "pong"
+
     # Run the server
     mcp.run(transport="stdio")
 
