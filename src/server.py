@@ -3,12 +3,12 @@
 MCP Prompt Server - Python Implementation
 
 Loads markdown files from the prompts directory and exposes them as MCP prompts.
-
 """
 
 import logging
 from pathlib import Path
 from importlib.resources import files
+from typing import Annotated
 
 from mcp.server.fastmcp import FastMCP
 from .prompts import load_markdown_prompts
@@ -48,6 +48,62 @@ except (TypeError, ModuleNotFoundError, AttributeError, StopIteration) as e:
     logger.info(f"Using fallback resources path: {RESOURCES_DIR}")
 
 
+def create_prompt_handler(content: str, description: str, arguments: list | None = None):
+    """
+    Create a prompt handler function with the appropriate signature.
+
+    For prompts without arguments, returns a simple function.
+    For prompts with arguments, creates a function with proper type hints
+    that FastMCP can introspect via Pydantic.
+
+    Args:
+        content: The prompt template content
+        description: The prompt description (becomes the function docstring)
+        arguments: Optional list of PromptArgument objects
+
+    Returns:
+        A callable handler function
+    """
+    if not arguments:
+        # Simple handler for prompts without arguments
+        def handler() -> str:
+            return content
+        handler.__doc__ = description
+        return handler
+
+    # For prompts with arguments, build a function dynamically
+    # Build parameter list with proper type annotations
+    params = []
+    for arg in arguments:
+        param_str = f"{arg.name}: Annotated[str, '{arg.description}']" if arg.description else f"{arg.name}: str"
+        params.append(param_str)
+
+    # Build template replacement code
+    replacements = []
+    for arg in arguments:
+        replacements.append(f"    result = result.replace('{{{arg.name}}}', str({arg.name}))")
+
+    # Construct the function code
+    func_code = f"""
+def handler({', '.join(params)}) -> str:
+    result = _content
+{chr(10).join(replacements)}
+    return result
+"""
+
+    # Execute to create the function in a clean namespace
+    namespace = {
+        "_content": content,
+        "Annotated": Annotated,
+        "str": str
+    }
+    exec(func_code, namespace)
+    handler = namespace["handler"]
+    handler.__doc__ = description
+
+    return handler
+
+
 def main() -> int:
     """Main entry point for the MCP server."""
 
@@ -69,29 +125,26 @@ def main() -> int:
     mcp = FastMCP("file-prompts")
 
     # Dynamically register each markdown file as a prompt
-    for name, (description, content, _) in prompts_data.items():
-        # Create a closure to capture the current values
-        def create_prompt_handler(prompt_content: str, prompt_desc: str):
-            def handler() -> str:
-                return prompt_content
-            handler.__doc__ = prompt_desc
-            return handler
+    for name, (parsed_doc, _) in prompts_data.items():
+        logger.info(f"Registering prompt: {name}")
 
-        # Register the prompt with FastMCP
-        prompt_handler = create_prompt_handler(content, description)
-        mcp.prompt(name)(prompt_handler)
+        handler = create_prompt_handler(
+            content=parsed_doc.content,
+            description=parsed_doc.description,
+            arguments=parsed_doc.arguments
+        )
+
+        mcp.prompt(name)(handler)
 
     # Dynamically register each resource document
-    for name, (description, content, _) in resources_data.items():
-        # Create a closure to capture the current values
+    for name, (parsed_doc, _) in resources_data.items():
         def create_resource_handler(resource_content: str, resource_desc: str):
             def handler() -> str:
                 return resource_content
             handler.__doc__ = resource_desc
             return handler
 
-        # Register the resource with FastMCP
-        resource_handler = create_resource_handler(content, description)
+        resource_handler = create_resource_handler(parsed_doc.content, parsed_doc.description)
         mcp.resource(f"resource://{name}", name=name)(resource_handler)
 
     # Register ping tool
@@ -102,4 +155,3 @@ def main() -> int:
 
     # Run the server
     mcp.run(transport="stdio")
-

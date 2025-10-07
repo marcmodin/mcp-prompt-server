@@ -13,13 +13,13 @@ SECURITY:
 """
 
 from pathlib import Path
-from .utils import load_documents
+from .utils import load_documents, ParsedDocument
 
 
-def load_markdown_prompts(directory: Path) -> dict[str, tuple[str, str, str]]:
+def load_markdown_prompts(directory: Path) -> dict[str, tuple[ParsedDocument, str]]:
     """
     Load all markdown files from directory.
-    Returns a dict mapping prompt name to (description, content, source_path).
+    Returns a dict mapping prompt name to (ParsedDocument, source_path).
 
     Raises:
         FileNotFoundError: If directory doesn't exist
@@ -30,7 +30,8 @@ def load_markdown_prompts(directory: Path) -> dict[str, tuple[str, str, str]]:
         directory=directory,
         file_extensions=['.md'],
         allow_slashes_in_name=False,
-        document_type="prompt"
+        document_type="prompt",
+        parse_arguments=True
     )
 
     if not prompts:

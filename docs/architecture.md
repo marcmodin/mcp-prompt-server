@@ -195,8 +195,8 @@ The server leverages the MCP Python SDK's FastMCP framework for:
 ### 2. Simplicity and Maintainability
 
 - Single-purpose components with clear responsibilities
-- Minimal dependencies (only MCP SDK)
-- No external YAML library (simple custom parser)
+- Minimal dependencies (MCP SDK + PyYAML)
+- Standard YAML parsing with PyYAML library
 - Fail-fast error handling
 
 ### 3. Extensibility
@@ -219,6 +219,7 @@ The server leverages the MCP Python SDK's FastMCP framework for:
 - **Package Manager**: `uv` (recommended) or `pip`
 - **Dependencies**:
   - `mcp[cli]>=1.15.0` (Model Context Protocol SDK)
+  - `pyyaml>=6.0` (YAML parsing)
 
 ### Development Requirements
 
@@ -327,6 +328,43 @@ The actual prompt content goes here. This can include:
 |-------|----------|------|------------|-------------|
 | `name` | Yes | String | 100 chars | Unique prompt identifier (alphanumeric, dash, underscore, space) |
 | `description` | Yes | String | 200 chars | Human-readable description for MCP clients (2-3 sentences) |
+| `arguments` | No | List[Object] | - | Optional list of prompt arguments (see below) |
+
+### Prompt Arguments (Optional)
+
+Prompts can define arguments for dynamic content substitution:
+
+```yaml
+---
+name: code-explainer
+description: Explains code with optional difficulty level
+arguments:
+  - name: code
+    description: The code snippet to explain
+    required: true
+  - name: difficulty
+    description: Target audience level (beginner/intermediate/advanced)
+    required: false
+---
+
+Please explain the following code:
+
+```
+{code}
+```
+
+{difficulty}
+```
+
+**Argument Object Fields:**
+
+| Field | Required | Type | Default | Description |
+|-------|----------|------|---------|-------------|
+| `name` | Yes | String | - | Argument name (alphanumeric and underscore only) |
+| `description` | No | String | `None` | Human-readable description of the argument |
+| `required` | No | Boolean | `false` | Whether the argument must be provided |
+
+**Note:** Arguments use `{argument_name}` syntax for template substitution in the prompt content.
 
 ### Content Processing
 
@@ -370,16 +408,14 @@ The actual prompt content goes here. This can include:
 1. **No Hot-Reload**: Changes to markdown files require server restart
 2. **Flat Directory Structure**: Only loads from top-level `prompts/` directory (no subdirectory scanning)
 3. **Startup-Only Loading**: Prompts loaded once at initialization
-4. **No Prompt Arguments**: Current implementation returns static content
 
 ### Future Enhancement Opportunities
 
 1. **File Watching**: Implement hot-reload using file system watchers
 2. **Subdirectory Support**: Enable recursive directory traversal
-3. **Prompt Templates**: Add variable substitution support
-4. **Caching Layer**: Add file modification time tracking
-5. **Metrics**: Add prometheus metrics for prompt usage
-6. **Multi-transport**: Support SSE/HTTP transports alongside stdio
+3. **Caching Layer**: Add file modification time tracking
+4. **Metrics**: Add prometheus metrics for prompt usage
+5. **Multi-transport**: Support SSE/HTTP transports alongside stdio
 
 ## Security Considerations
 

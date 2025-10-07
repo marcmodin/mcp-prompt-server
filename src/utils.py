@@ -1,11 +1,10 @@
 """
 Shared Utilities for Loading and Validating Documents
 
-Provides common validation, parsing, and security functions used by both
-prompts and resources modules.
+Handles loading, parsing, and validating markdown files for MCP prompts and resources.
 
 SECURITY:
-- Content is returned as-is without sanitization. MCP clients should treat
+- Markdown content is returned as-is without sanitization. MCP clients should treat
   all content as potentially untrusted and apply appropriate sanitization
   before rendering or executing any content.
 - File size is limited to 10MB to prevent resource exhaustion attacks.
@@ -16,8 +15,9 @@ SECURITY:
 import os
 import re
 import logging
+import yaml
 from pathlib import Path
-from typing import Callable
+from dataclasses import dataclass
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -28,6 +28,23 @@ MAX_DESCRIPTION_LENGTH = 200  # Maximum length for descriptions
 
 # Default file size limit (can be overridden per document type)
 DEFAULT_MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10MB default limit
+
+
+@dataclass
+class PromptArgument:
+    """Represents a prompt argument definition compatible with MCP spec."""
+    name: str
+    description: str | None = None
+    required: bool = False
+
+
+@dataclass
+class ParsedDocument:
+    """Result of parsing a document's frontmatter."""
+    name: str
+    description: str
+    content: str
+    arguments: list[PromptArgument] | None = None
 
 
 def validate_safe_name(name: str, allow_slashes: bool = False) -> None:
@@ -60,28 +77,27 @@ def validate_safe_name(name: str, allow_slashes: bool = False) -> None:
         raise ValueError(f"Name contains invalid characters (only {allowed} allowed)")
 
 
-def parse_frontmatter(content: str, allow_slashes_in_name: bool = False) -> tuple[str, str, str]:
+def parse_frontmatter(content: str, allow_slashes_in_name: bool = False, parse_arguments: bool = False) -> ParsedDocument:
     """
     Parse YAML frontmatter from content.
 
     Args:
         content: The file content with frontmatter
         allow_slashes_in_name: Whether to allow slashes in the name field
+        parse_arguments: Whether to parse the arguments field (for prompts)
 
     Returns:
-        Tuple of (name, description, content_without_frontmatter)
+        ParsedDocument with extracted metadata and content
 
     Raises:
         ValueError: If frontmatter is missing or invalid
     """
-    # Split content by lines to avoid ReDoS with large inputs
     lines = content.split('\n')
 
-    # Check if content starts with frontmatter delimiter
     if not lines or lines[0].strip() != '---':
         raise ValueError("No valid frontmatter found")
 
-    # Find the closing delimiter (limit search to first 100 lines to prevent DoS)
+    # Find closing delimiter (limit to first 100 lines to prevent DoS)
     closing_index = None
     for i in range(1, min(len(lines), 100)):
         if lines[i].strip() == '---':
@@ -91,40 +107,76 @@ def parse_frontmatter(content: str, allow_slashes_in_name: bool = False) -> tupl
     if closing_index is None:
         raise ValueError("No closing frontmatter delimiter found")
 
-    # Extract frontmatter and body
-    frontmatter_lines = lines[1:closing_index]
-    body_lines = lines[closing_index + 1:]
-    body = '\n'.join(body_lines)
+    frontmatter_text = '\n'.join(lines[1:closing_index])
+    body = '\n'.join(lines[closing_index + 1:])
 
-    # Parse simple YAML key-value pairs
-    name = None
-    description = None
+    # Parse YAML frontmatter using PyYAML
+    try:
+        fields = yaml.safe_load(frontmatter_text) or {}
+    except yaml.YAMLError as e:
+        raise ValueError(f"Invalid YAML in frontmatter: {e}")
 
-    for line in frontmatter_lines:
-        if ':' in line:
-            key, value = line.split(':', 1)
-            key = key.strip()
-            value = value.strip().strip('"').strip("'")
-
-            if key == 'name':
-                name = value
-            elif key == 'description':
-                description = value
+    # Extract required fields
+    name = fields.get('name')
+    description = fields.get('description')
 
     if not name or not description:
         raise ValueError("Frontmatter must include 'name' and 'description'")
 
-    # Validate name and description lengths
+    if not isinstance(name, str) or not isinstance(description, str):
+        raise ValueError("'name' and 'description' must be strings")
+
+    # Validate lengths
     if len(name) > MAX_NAME_LENGTH:
         raise ValueError(f"Name exceeds maximum length of {MAX_NAME_LENGTH}")
 
     if len(description) > MAX_DESCRIPTION_LENGTH:
         raise ValueError(f"Description exceeds maximum length of {MAX_DESCRIPTION_LENGTH}")
 
-    # Validate name is safe (no path traversal)
+    # Validate name is safe
     validate_safe_name(name, allow_slashes=allow_slashes_in_name)
 
-    return name, description, body
+    # Parse arguments if requested (for prompts)
+    arguments = None
+    if parse_arguments:
+        arguments_raw = fields.get('arguments')
+        if arguments_raw is not None:
+            if not isinstance(arguments_raw, list):
+                raise ValueError("arguments must be a list")
+
+            arguments = []
+            for arg in arguments_raw:
+                if not isinstance(arg, dict):
+                    raise ValueError("Each argument must be an object with 'name' field")
+
+                arg_name = arg.get('name')
+                if not arg_name or not isinstance(arg_name, str):
+                    raise ValueError("Argument must have a 'name' field (string)")
+
+                if not re.match(r'^[a-zA-Z0-9_]+$', arg_name):
+                    raise ValueError(f"Invalid argument name '{arg_name}' (only alphanumeric and underscore allowed)")
+
+                # Optional fields with SDK defaults
+                arg_description = arg.get('description')  # Default: None
+                if arg_description is not None and not isinstance(arg_description, str):
+                    raise ValueError(f"Argument description must be a string for '{arg_name}'")
+
+                arg_required = arg.get('required', False)  # SDK default: False
+                if not isinstance(arg_required, bool):
+                    raise ValueError(f"Argument 'required' must be a boolean for '{arg_name}'")
+
+                arguments.append(PromptArgument(
+                    name=arg_name,
+                    description=arg_description,
+                    required=arg_required
+                ))
+
+    return ParsedDocument(
+        name=name,
+        description=description,
+        content=body,
+        arguments=arguments
+    )
 
 
 def sanitize_path_for_logging(path: Path, base_dir: Path) -> str:
@@ -149,8 +201,9 @@ def load_documents(
     file_extensions: list[str],
     allow_slashes_in_name: bool = False,
     document_type: str = "document",
-    max_file_size: int = DEFAULT_MAX_FILE_SIZE_BYTES
-) -> dict[str, tuple[str, str, str]]:
+    max_file_size: int = DEFAULT_MAX_FILE_SIZE_BYTES,
+    parse_arguments: bool = False
+) -> dict[str, tuple[ParsedDocument, str]]:
     """
     Generic document loader that handles validation and security checks.
 
@@ -160,9 +213,10 @@ def load_documents(
         allow_slashes_in_name: Whether to allow slashes in document names
         document_type: Type of document being loaded (for logging)
         max_file_size: Maximum file size in bytes (default: 10MB)
+        parse_arguments: Whether to parse arguments field (for prompts)
 
     Returns:
-        Dict mapping document name to (description, content, source_path)
+        Dict mapping document name to (ParsedDocument, source_path)
 
     Raises:
         FileNotFoundError: If directory doesn't exist
@@ -213,20 +267,22 @@ def load_documents(
 
             content = doc_file.read_text(encoding='utf-8')
 
-            # Parse frontmatter to extract name, description, and body
-            name, description, body = parse_frontmatter(content, allow_slashes_in_name=allow_slashes_in_name)
+            # Parse frontmatter
+            parsed = parse_frontmatter(
+                content,
+                allow_slashes_in_name=allow_slashes_in_name,
+                parse_arguments=parse_arguments
+            )
 
-            documents[name] = (description, body, str(doc_file))
+            documents[parsed.name] = (parsed, str(doc_file))
 
-        except (ValueError, OSError):
-            # Sanitize error message to avoid leaking sensitive paths
+        except (ValueError, OSError) as e:
             sanitized_path = sanitize_path_for_logging(doc_file, dir_path)
-            logger.warning(f"Failed to load {sanitized_path}: validation error")
+            logger.warning(f"Failed to load {sanitized_path}: {str(e)}")
             continue
-        except Exception:
-            # Generic error for unexpected issues
+        except Exception as e:
             sanitized_path = sanitize_path_for_logging(doc_file, dir_path)
-            logger.warning(f"Failed to load {sanitized_path}: unexpected error")
+            logger.warning(f"Failed to load {sanitized_path}: {str(e)}")
             continue
 
     if not documents:

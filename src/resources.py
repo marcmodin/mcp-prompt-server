@@ -13,13 +13,13 @@ SECURITY:
 """
 
 from pathlib import Path
-from .utils import load_documents
+from .utils import load_documents, ParsedDocument
 
 
-def load_resource_documents(directory: Path) -> dict[str, tuple[str, str, str]]:
+def load_resource_documents(directory: Path) -> dict[str, tuple[ParsedDocument, str]]:
     """
     Load all resource documents from directory.
-    Returns a dict mapping resource name to (description, content, source_path).
+    Returns a dict mapping resource name to (ParsedDocument, source_path).
 
     Resources can have slashes in their names for URI-style paths (e.g., "docs/api").
 
