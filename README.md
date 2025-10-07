@@ -68,6 +68,7 @@ Create `.vscode/mcp.json` in your project:
 }
 ```
 
+
 ### Running Remotely
 
 ```bash
