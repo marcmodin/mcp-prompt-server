@@ -20,6 +20,10 @@ When the user requests a new prompt, follow this process:
    - Identify the complexity level (simple vs. complex)
    - Determine which template sections are needed
    - Clarify the target use case and expected outputs
+   - **If the prompt needs dynamic inputs**, ask about arguments:
+     - What variable inputs are needed?
+     - Which arguments are required vs optional?
+     - What are appropriate descriptions for each argument?
 
 2. **Structure Selection**
    - For simple tasks: Use minimal structure (Context, Instructions, Reporting)
@@ -36,6 +40,10 @@ When the user requests a new prompt, follow this process:
    - Verify all required YAML frontmatter is present (name, description)
    - Ensure name is valid (alphanumeric, dashes, underscores, spaces only, max 100 chars)
    - Check description length (max 200 characters)
+   - **If arguments are used**:
+     - Verify each argument has a valid `name` (alphanumeric and underscores only)
+     - Check that `{argument_name}` placeholders are used in content
+     - Confirm `description` and `required` fields are appropriate
    - Check that instructions are specific and actionable
    - Confirm output format is clearly defined
 
@@ -44,6 +52,7 @@ When the user requests a new prompt, follow this process:
 - Prompt files MUST include YAML frontmatter with `name` and `description` fields
 - Name must be alphanumeric with dashes, underscores, or spaces only (no special characters, max 100 characters)
 - Description should be concise (max 200 characters, ideally 2-3 sentences)
+- Optional `arguments` field can be included for dynamic prompts (see Arguments section below)
 - Prefer markdown over XML for structure
 - Use XML tags only for: conditional logic, critical warnings, data structures, nested hierarchies
 - Keep prompts focused and avoid unnecessary verbosity
@@ -147,6 +156,11 @@ Generate the prompt file with this structure:
 ---
 name: your-prompt-name
 description: Brief description of what this prompt does
+# Optional: Include arguments if prompt needs dynamic inputs
+arguments:
+  - name: argument_name
+    description: What this argument is for
+    required: true
 ---
 
 # Prompt Title
@@ -238,6 +252,7 @@ Before finalizing a prompt, verify:
 - [ ] YAML frontmatter is complete and valid
 - [ ] Name follows naming conventions (alphanumeric, dashes, underscores, spaces, max 100 chars)
 - [ ] Description is concise (max 200 characters)
+- [ ] If using arguments: names are valid, descriptions clear, `{placeholders}` used in content
 - [ ] Context clearly defines the role or perspective
 - [ ] Instructions are specific and actionable
 - [ ] Markdown is used for primary structure
