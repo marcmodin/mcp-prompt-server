@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'src/**'
+      - 'prompts/**'
+      - 'resources/**'
+      - '.github/workflows/release-please.yml'
+      - 'pyproject.toml'
+      - '.python-version'
 
 permissions:
   contents: write
