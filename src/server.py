@@ -19,34 +19,48 @@ from .resources import load_resource_documents
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
-# Directory paths - using importlib.resources for reliable path resolution
-try:
-    prompts_ref = files("prompts")
-    # Handle both regular Path and MultiplexedPath from importlib.resources
-    if hasattr(prompts_ref, '__fspath__'):
-        PROMPTS_DIR = Path(prompts_ref.__fspath__())
-    else:
-        # For MultiplexedPath, iterate to get first valid path
-        PROMPTS_DIR = Path(next(iter(prompts_ref._paths)))
-    logger.info(f"Loaded prompts from package: {PROMPTS_DIR}")
-except (TypeError, ModuleNotFoundError, AttributeError, StopIteration) as e:
-    # Fallback for development mode
-    PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
-    logger.info(f"Using fallback prompts path: {PROMPTS_DIR}")
+# Directory paths - prioritize local development directory
+# Check for local development directory first (relative to src/server.py)
+local_prompts = Path(__file__).parent.parent / "prompts"
+if local_prompts.exists() and local_prompts.is_dir():
+    PROMPTS_DIR = local_prompts
+    logger.info(f"Using local prompts directory: {PROMPTS_DIR}")
+else:
+    # Fall back to installed package location
+    try:
+        prompts_ref = files("prompts")
+        # Handle both regular Path and MultiplexedPath from importlib.resources
+        if hasattr(prompts_ref, '__fspath__'):
+            PROMPTS_DIR = Path(prompts_ref.__fspath__())
+        else:
+            # For MultiplexedPath, iterate to get first valid path
+            PROMPTS_DIR = Path(next(iter(prompts_ref._paths)))
+        logger.info(f"Loaded prompts from installed package: {PROMPTS_DIR}")
+    except (TypeError, ModuleNotFoundError, AttributeError, StopIteration) as e:
+        # Final fallback (should rarely reach here)
+        PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
+        logger.info(f"Using fallback prompts path: {PROMPTS_DIR}")
 
-try:
-    resources_ref = files("resources")
-    # Handle both regular Path and MultiplexedPath from importlib.resources
-    if hasattr(resources_ref, '__fspath__'):
-        RESOURCES_DIR = Path(resources_ref.__fspath__())
-    else:
-        # For MultiplexedPath, iterate to get first valid path
-        RESOURCES_DIR = Path(next(iter(resources_ref._paths)))
-    logger.info(f"Loaded resources from package: {RESOURCES_DIR}")
-except (TypeError, ModuleNotFoundError, AttributeError, StopIteration) as e:
-    # Fallback for development mode
-    RESOURCES_DIR = Path(__file__).parent.parent / "resources"
-    logger.info(f"Using fallback resources path: {RESOURCES_DIR}")
+# Check for local development directory first (relative to src/server.py)
+local_resources = Path(__file__).parent.parent / "resources"
+if local_resources.exists() and local_resources.is_dir():
+    RESOURCES_DIR = local_resources
+    logger.info(f"Using local resources directory: {RESOURCES_DIR}")
+else:
+    # Fall back to installed package location
+    try:
+        resources_ref = files("resources")
+        # Handle both regular Path and MultiplexedPath from importlib.resources
+        if hasattr(resources_ref, '__fspath__'):
+            RESOURCES_DIR = Path(resources_ref.__fspath__())
+        else:
+            # For MultiplexedPath, iterate to get first valid path
+            RESOURCES_DIR = Path(next(iter(resources_ref._paths)))
+        logger.info(f"Loaded resources from installed package: {RESOURCES_DIR}")
+    except (TypeError, ModuleNotFoundError, AttributeError, StopIteration) as e:
+        # Final fallback (should rarely reach here)
+        RESOURCES_DIR = Path(__file__).parent.parent / "resources"
+        logger.info(f"Using fallback resources path: {RESOURCES_DIR}")
 
 
 def create_prompt_handler(content: str, description: str, arguments: list | None = None):
