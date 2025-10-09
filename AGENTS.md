@@ -12,7 +12,7 @@ Agent instructions for working in this repository.
 
 **Run remotely**: `uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server`
 
-**Debug locally**: `npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server`
+**Debug locally**: `npx @modelcontextprotocol/inspector uv run mcp-prompt-server`
 
 **Debug remotely**: `npx @modelcontextprotocol/inspector uvx --from git+https://github.com/marcmodin/mcp-prompt-server mcp-prompt-server`
 
@@ -20,4 +20,6 @@ Agent instructions for working in this repository.
 
 - Python >=3.11, uses `uv` for dependency management
 - Prompt files must be in `prompts/` with required YAML frontmatter (name, description)
+- Resource files must be in `resources/` with required YAML frontmatter (name, description)
+- No symlinks allowed for security reasons
 - Changes to markdown files require server restart
