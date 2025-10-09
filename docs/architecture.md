@@ -85,16 +85,11 @@ The server enables:
 
 **Key Design Patterns:**
 
-- **Closure Pattern**: Each prompt handler is created via closure to capture specific content and description
+- **Dynamic Handler Creation**: Each prompt handler is created with proper function signature introspection
+- **Pydantic Integration**: Uses `inspect.Signature` and `Annotated` types for FastMCP/Pydantic introspection
+- **Template Substitution**: Supports argument-based templates using `{argument_name}` syntax
 - **Dynamic Registration**: Prompts are registered at runtime based on filesystem content
 
-```python
-def create_prompt_handler(prompt_content: str, prompt_desc: str):
-    def handler() -> str:
-        return prompt_content
-    handler.__doc__ = prompt_desc
-    return handler
-```
 
 #### 2. **src/prompts.py** - Prompt Loading Module
 

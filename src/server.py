@@ -5,6 +5,7 @@ MCP Prompt Server - Python Implementation
 Loads markdown files from the prompts directory and exposes them as MCP prompts.
 """
 
+import inspect
 import logging
 from pathlib import Path
 from importlib.resources import files
@@ -52,9 +53,12 @@ def create_prompt_handler(content: str, description: str, arguments: list | None
     """
     Create a prompt handler function with the appropriate signature.
 
+    Follows introspection pattern using inspect.Signature and
+    proper annotations.
+
     For prompts without arguments, returns a simple function.
-    For prompts with arguments, creates a function with proper type hints
-    that FastMCP can introspect via Pydantic.
+    For prompts with arguments, creates a function with expected parameters
+    and signature that FastMCP can introspect.
 
     Args:
         content: The prompt template content
@@ -62,7 +66,7 @@ def create_prompt_handler(content: str, description: str, arguments: list | None
         arguments: Optional list of PromptArgument objects
 
     Returns:
-        A callable handler function
+        A callable handler function with proper signature and annotations
     """
     if not arguments:
         # Simple handler for prompts without arguments
@@ -71,34 +75,47 @@ def create_prompt_handler(content: str, description: str, arguments: list | None
         handler.__doc__ = description
         return handler
 
-    # For prompts with arguments, build a function dynamically
-    # Build parameter list with proper type annotations
-    params = []
+    # Create handler that will be called with validated args
+    def handler(**kwargs) -> str:
+        """Template handler with dynamic parameters."""
+        
+        # Perform substitution
+        result = content
+        for arg_name, arg_value in kwargs.items():
+            result = result.replace(f'{{{arg_name}}}', str(arg_value))
+        return result
+
+    # Build parameters with proper annotations for introspection
+    parameters = []
+    annotations = {}
+
     for arg in arguments:
-        param_str = f"{arg.name}: Annotated[str, '{arg.description}']" if arg.description else f"{arg.name}: str"
-        params.append(param_str)
+        # Use Annotated to embed description metadata
+        if arg.description:
+            annotation = Annotated[str, arg.description]
+        else:
+            annotation = str
 
-    # Build template replacement code
-    replacements = []
-    for arg in arguments:
-        replacements.append(f"    result = result.replace('{{{arg.name}}}', str({arg.name}))")
+        # Create Parameter object
+        param = inspect.Parameter(
+            name=arg.name,
+            kind=inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            default=inspect.Parameter.empty,  # Required parameter
+            annotation=annotation
+        )
 
-    # Construct the function code
-    func_code = f"""
-def handler({', '.join(params)}) -> str:
-    result = _content
-{chr(10).join(replacements)}
-    return result
-"""
+        parameters.append(param)
+        annotations[arg.name] = annotation
 
-    # Execute to create the function in a clean namespace
-    namespace = {
-        "_content": content,
-        "Annotated": Annotated,
-        "str": str
-    }
-    exec(func_code, namespace)
-    handler = namespace["handler"]
+    # Create and attach signature (FastMCP calls inspect.signature())
+    handler.__signature__ = inspect.Signature(
+        parameters=parameters,
+        return_annotation=str
+    )
+
+    # Set annotations and docstring
+    annotations['return'] = str
+    handler.__annotations__ = annotations
     handler.__doc__ = description
 
     return handler
