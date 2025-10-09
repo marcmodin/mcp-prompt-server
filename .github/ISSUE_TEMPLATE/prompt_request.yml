@@ -10,11 +10,19 @@ body:
       value: |
         Thanks for suggesting a new prompt! This template will help gather the information needed to create a well-structured prompt file.
 
+        **What is a prompt?** A reusable instruction template that guides agents to perform specific tasks consistently.
+
+        **Before you start:** Think about what problem you're solving and who will use this prompt. The more specific you are, the better the implementation will be!
+
   - type: input
     id: prompt_name
     attributes:
       label: Prompt Name
-      description: A concise name for the prompt (alphanumeric, dashes, underscores, or spaces only, max 100 chars)
+      description: |
+        A concise, descriptive name (max 100 characters). Use alphanumeric characters, dashes, underscores, or spaces.
+
+        ✅ Valid: "python-code-review", "security-audit", "create-api-documentation-prompt"
+        ❌ Invalid: "review!!!", "code@review", "prompt #1", "My Awesome Prompt"
       placeholder: "e.g., python-code-review or Security Audit Workflow"
     validations:
       required: true
@@ -23,8 +31,15 @@ body:
     id: description
     attributes:
       label: Description
-      description: Brief description of what this prompt does (max 200 characters, 2-3 sentences)
-      placeholder: "e.g., Review Python code for quality issues and best practices"
+      description: |
+        Brief, clear description of what this prompt does. Keep it concise - aim for 1-2 sentences under 200 characters.
+
+        Think: "This prompt helps users [do what] by [how]"
+      placeholder: |
+        Good examples:
+        - "Reviews Python code for PEP 8 compliance, security issues, and best practices"
+        - "Generates API documentation from code comments and type hints"
+        - "Transforms user stories into technical implementation tasks with acceptance criteria"
     validations:
       required: true
 
@@ -32,7 +47,14 @@ body:
     id: complexity
     attributes:
       label: Prompt Complexity
-      description: Is this a simple or complex prompt?
+      description: |
+        Help us understand the complexity level:
+
+        **Choose Simple if:** Single task, one-phase execution, direct input → output
+        Examples: "Review this code", "Summarize this text", "Format this data"
+
+        **Choose Complex if:** Multiple steps, conditional logic, workflow phases, structured decision-making
+        Examples: "Audit security then generate report", "Analyze → Prioritize → Recommend", "Multi-phase code generation"
       options:
         - Simple (single-phase task, straightforward input/output)
         - Complex (multi-step workflow, conditional logic, structured output)
@@ -43,12 +65,18 @@ body:
     id: purpose
     attributes:
       label: Purpose and Use Case
-      description: What problem does this prompt solve? Who will use it and why?
+      description: |
+        Explain the "why" behind this prompt. What problem does it solve? Who will benefit?
+
+        Be specific about inputs, outputs, and the target audience.
       placeholder: |
-        - Target domain/use case
-        - Expected inputs
-        - Expected outputs
-        - Who benefits from this prompt
+        Example for a Python code review prompt:
+
+        **Target Domain:** Python development teams and individual developers
+        **Problem Solved:** Inconsistent code quality and missed best practices during manual reviews
+        **Expected Inputs:** Python source code files (.py), code snippets, or git diffs
+        **Expected Outputs:** Structured review with issues categorized by severity, specific recommendations, and refactored code examples
+        **Who Benefits:** Python developers seeking automated code quality checks before PR submission
     validations:
       required: true
 
@@ -56,8 +84,21 @@ body:
     id: context
     attributes:
       label: Context/Role
-      description: What role or perspective should the AI take? What domain knowledge is needed?
-      placeholder: "e.g., You are an experienced Python developer focused on code quality..."
+      description: |
+        Define the role, expertise level, and perspective the AI should adopt.
+
+        Think about: What expertise is needed? What mindset or approach should be taken?
+      placeholder: |
+        Examples:
+
+        For code review:
+        "You are a senior Python developer with 10+ years of experience in production systems. You prioritize code maintainability, security, and performance. You follow PEP 8 standards and modern Python best practices."
+
+        For documentation:
+        "You are a technical writer specializing in API documentation. You write clear, concise documentation that serves both beginners and experienced developers. You emphasize practical examples and common use cases."
+
+        For security audit:
+        "You are a security engineer with expertise in OWASP Top 10 vulnerabilities and secure coding practices. You approach code with a security-first mindset, identifying potential attack vectors and recommending defense strategies."
     validations:
       required: true
 
@@ -65,11 +106,22 @@ body:
     id: instructions
     attributes:
       label: Instructions
-      description: What specific steps or actions should the AI perform?
+      description: |
+        List the specific steps or actions the AI should perform. Be as detailed as possible.
+
+        For simple prompts: List sequential steps
+        For complex prompts: Consider phases, decision points, and conditional logic
       placeholder: |
-        1. First step
-        2. Second step
-        3. Third step
+        Example for code review prompt:
+
+        1. Read and parse the provided Python code
+        2. Check for PEP 8 compliance issues (line length, naming conventions, imports)
+        3. Identify security vulnerabilities (SQL injection, XSS, hardcoded secrets)
+        4. Analyze code structure for maintainability issues (complexity, duplication, naming)
+        5. Review error handling and edge cases
+        6. Check for performance issues (inefficient loops, unnecessary computations)
+        7. Provide specific recommendations with code examples for each issue found
+        8. Prioritize issues by severity (critical, high, medium, low)
     validations:
       required: true
 
@@ -77,11 +129,39 @@ body:
     id: output_format
     attributes:
       label: Expected Output Format
-      description: How should the response be structured? Provide an example if possible.
+      description: |
+        Define the structure and format of the expected output. Be specific about sections, formatting, and data structure.
+
+        You can include an example showing what good output looks like.
       placeholder: |
-        - Format structure (markdown, JSON, etc.)
-        - Required sections
-        - Example output
+        Example for code review prompt:
+
+        **Format:** Markdown with structured sections
+
+        **Required Sections:**
+        1. Summary (2-3 sentence overview)
+        2. Critical Issues (must fix before merge)
+        3. High Priority Issues (should fix soon)
+        4. Medium Priority Issues (nice to have)
+        5. Low Priority Issues (suggestions)
+        6. Positive Observations (what's done well)
+
+        **Example Output:**
+        ```markdown
+        ## Code Review Summary
+        The code is generally well-structured but has 2 critical security issues and 3 high-priority maintainability concerns.
+
+        ## Critical Issues
+        - **Line 45**: Hardcoded API key in source code
+          Recommendation: Move to environment variable
+          ```python
+          api_key = os.getenv('API_KEY')
+          ```
+
+        ## High Priority Issues
+        - **Line 23**: SQL query vulnerable to injection
+        ...
+        ```
     validations:
       required: true
 
@@ -89,11 +169,27 @@ body:
     id: constraints
     attributes:
       label: Constraints and Requirements
-      description: Any boundaries, limitations, or specific requirements?
+      description: |
+        Define boundaries, limitations, or specific requirements the prompt must follow.
+
+        This is optional but highly recommended for complex or sensitive prompts.
       placeholder: |
-        - What should be avoided
-        - Compliance requirements
-        - Technical constraints
+        Common examples:
+
+        **What to avoid:**
+        - Do not suggest breaking changes without explicit permission
+        - Avoid recommending deprecated Python features (e.g., asyncore, imp)
+        - Do not provide generic advice - be specific to the code provided
+
+        **Compliance requirements:**
+        - Follow GDPR guidelines when handling personal data
+        - Ensure WCAG 2.1 AA accessibility standards
+        - Adhere to SOC 2 security controls
+
+        **Technical constraints:**
+        - Python 3.11+ only (no Python 2 compatibility)
+        - Maximum response size: 4000 characters
+        - Use standard library only, avoid external dependencies
     validations:
       required: false
 
@@ -101,11 +197,25 @@ body:
     id: examples
     attributes:
       label: Example Scenarios
-      description: Provide example inputs/outputs or scenarios where this prompt would be used
+      description: |
+        Provide concrete examples showing how this prompt would be used in practice.
+
+        Describe the scenario, what input would be provided, and what output you'd expect. Keep it simple.
       placeholder: |
         Example 1:
-        Input: [example input]
-        Expected Output: [example output]
+        Scenario: Reviewing a simple Python function with style issues
+        Input: A 10-line Python function with missing type hints and poor naming
+        Expected Output: List of PEP 8 violations with specific line numbers and recommendations
+
+        Example 2:
+        Scenario: Detecting security vulnerability
+        Input: Code snippet with SQL query using string interpolation
+        Expected Output: Critical security warning with explanation and secure alternative
+
+        Example 3:
+        Scenario: Well-written code
+        Input: Clean, well-documented code following best practices
+        Expected Output: Brief summary confirming code quality with positive feedback
     validations:
       required: false
 
