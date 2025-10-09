@@ -144,6 +144,7 @@ body:
           - Read through all provided information above
           - Identify if this is a simple or complex prompt (see Complexity field)
           - Review the prompt template guide at `docs/prompt-template.md`
+          - Review the create prompt command at `.claude/commands/create-prompt.md`
 
         ### 2. Determine Structure
 
