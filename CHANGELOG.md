@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/marcmodin/mcp-prompt-server/compare/v0.2.0...v0.3.0) (2025-10-10)
+
+
+### Features
+
+* Add redneck encryption string functionality ([#7](https://github.com/marcmodin/mcp-prompt-server/issues/7)) ([a57617d](https://github.com/marcmodin/mcp-prompt-server/commit/a57617d3cb4ff8b1dc1f5486a3dee39d5d28737f))
+
+
+### Documentation
+
+* **prompt:** remove test prompts ([28c48eb](https://github.com/marcmodin/mcp-prompt-server/commit/28c48eb90b8130c6f6b8276510434a126da78d09))
+
 ## [0.2.0](https://github.com/marcmodin/mcp-prompt-server/compare/v0.1.0...v0.2.0) (2025-10-09)
 
 
