@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.0](https://github.com/marcmodin/mcp-prompt-server/compare/v0.2.0...v0.3.0) (2025-10-11)
+
+
+### Features
+
+* Add redneck encryption string functionality ([#7](https://github.com/marcmodin/mcp-prompt-server/issues/7)) ([a57617d](https://github.com/marcmodin/mcp-prompt-server/commit/a57617d3cb4ff8b1dc1f5486a3dee39d5d28737f))
+* enforce namespace convention in slash commands ([b71bb01](https://github.com/marcmodin/mcp-prompt-server/commit/b71bb0104250bf62bb38dde9ce61117f889016bc))
+* implement namespace support for prompts and resources ([21a15c3](https://github.com/marcmodin/mcp-prompt-server/commit/21a15c3f18385cca8076e1cd23fa52023ccc1675))
+
+
+### Documentation
+
+* **prompt:** remove test prompts ([28c48eb](https://github.com/marcmodin/mcp-prompt-server/commit/28c48eb90b8130c6f6b8276510434a126da78d09))
+* update documentation with namespace convention ([49d6a3b](https://github.com/marcmodin/mcp-prompt-server/commit/49d6a3b92be50f67ad108b7a4f3cf284bb06dc12))
+
 ## [0.2.0](https://github.com/marcmodin/mcp-prompt-server/compare/v0.1.0...v0.2.0) (2025-10-09)
 
 
