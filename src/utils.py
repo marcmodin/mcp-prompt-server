@@ -47,6 +47,27 @@ class ParsedDocument:
     arguments: list[PromptArgument] | None = None
 
 
+def transform_name_to_namespaced(name: str) -> str:
+    """
+    Transform hyphenated name to namespaced format.
+    Replaces first hyphen with colon to create namespace:name format.
+
+    Examples:
+        "prompt-create" -> "prompt:create"
+        "git-add-clean-commit" -> "git:add-clean-commit"
+        "create" -> "create" (no change if no hyphen)
+
+    Args:
+        name: The name to transform
+
+    Returns:
+        Transformed name with first hyphen replaced by colon
+    """
+    if '-' in name:
+        return name.replace('-', ':', 1)
+    return name
+
+
 def validate_safe_name(name: str, allow_slashes: bool = False) -> None:
     """
     Validate that a name is safe and doesn't contain path traversal sequences.
@@ -67,13 +88,14 @@ def validate_safe_name(name: str, allow_slashes: bool = False) -> None:
         raise ValueError("Name contains invalid path characters")
 
     # Build regex pattern based on whether slashes are allowed
+    # Note: colon is always allowed to support namespace:name format
     if allow_slashes:
-        pattern = r'^[a-zA-Z0-9_\-\s/]+$'
+        pattern = r'^[a-zA-Z0-9_\-\s/:]+$'
     else:
-        pattern = r'^[a-zA-Z0-9_\-\s]+$'
+        pattern = r'^[a-zA-Z0-9_\-\s:]+$'
 
     if not re.match(pattern, name):
-        allowed = "alphanumeric, dash, underscore, slash, and spaces" if allow_slashes else "alphanumeric, dash, underscore, and spaces"
+        allowed = "alphanumeric, dash, underscore, colon, slash, and spaces" if allow_slashes else "alphanumeric, dash, underscore, colon, and spaces"
         raise ValueError(f"Name contains invalid characters (only {allowed} allowed)")
 
 
@@ -133,8 +155,11 @@ def parse_frontmatter(content: str, allow_slashes_in_name: bool = False, parse_a
     if len(description) > MAX_DESCRIPTION_LENGTH:
         raise ValueError(f"Description exceeds maximum length of {MAX_DESCRIPTION_LENGTH}")
 
-    # Validate name is safe
+    # Validate name is safe (before transformation)
     validate_safe_name(name, allow_slashes=allow_slashes_in_name)
+
+    # Transform name to namespaced format (first hyphen becomes colon)
+    name = transform_name_to_namespaced(name)
 
     # Parse arguments if requested (for prompts)
     arguments = None

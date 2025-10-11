@@ -176,7 +176,9 @@ def main() -> int:
             return handler
 
         resource_handler = create_resource_handler(parsed_doc.content, parsed_doc.description)
-        mcp.resource(f"resource://{name}", name=name)(resource_handler)
+        # Convert colon to slash for URI compatibility (resource://prompt:template -> resource://prompt/template)
+        resource_uri = name.replace(':', '/')
+        mcp.resource(f"resource://{resource_uri}", name=name)(resource_handler)
 
     # Register ping tool
     @mcp.tool()
