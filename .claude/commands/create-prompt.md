@@ -17,6 +17,9 @@ When the user requests a new prompt, follow this process:
 
 1. **Understand Requirements**
    - Ask clarifying questions about the prompt's purpose
+   - **Determine the namespace/category** for the prompt:
+     - What domain does this prompt belong to? (e.g., git, jira, code, security, prompt, docs)
+     - This will become the namespace prefix in the name (e.g., `git-assistant` becomes `git:assistant`)
    - Identify the complexity level (simple vs. complex)
    - Determine which template sections are needed
    - Clarify the target use case and expected outputs
@@ -50,7 +53,10 @@ When the user requests a new prompt, follow this process:
 ## Constraints
 
 - Prompt files MUST include YAML frontmatter with `name` and `description` fields
-- Name must be alphanumeric with dashes, underscores, or spaces only (no special characters, max 100 characters)
+- **Name must follow namespace convention**: `{namespace}-{name}` format (e.g., `git-assistant`, `jira-description`)
+  - The first hyphen separates namespace from name and will be converted to a colon (e.g., `git:assistant`)
+  - Use kebab-case: alphanumeric with dashes, underscores, or spaces only (no special characters, max 100 characters)
+  - Choose appropriate namespace based on domain: git, jira, code, security, prompt, docs, etc.
 - Description should be concise (max 200 characters, ideally 2-3 sentences)
 - Optional `arguments` field can be included for dynamic prompts (see Arguments section below)
 - Prefer markdown over XML for structure
@@ -63,6 +69,7 @@ When the user requests a new prompt, follow this process:
 
 1. **Gather Requirements**
    - Prompt the user for: purpose, target domain, input/output expectations
+   - **Determine namespace**: Identify the domain/category (git, jira, code, security, prompt, docs, etc.)
    - Determine complexity (simple or complex prompt)
    - Identify if special sections are needed (Variables, Constraints, Workflow, Process)
 
@@ -90,8 +97,8 @@ When the user requests a new prompt, follow this process:
 
 4. **Create File**
    - Generate the prompt file in `prompts/` directory
-   - Use kebab-case for filename: `prompt-name.md`
-   - Include proper YAML frontmatter
+   - Use kebab-case for filename: `{namespace}-{name}.md` (e.g., `git-assistant.md`, `jira-description.md`)
+   - Include proper YAML frontmatter with `name: {namespace}-{name}`
    - Validate structure before saving
 
 5. **Review and Refine**
@@ -154,7 +161,7 @@ Generate the prompt file with this structure:
 
 ```yaml
 ---
-name: your-prompt-name
+name: namespace-prompt-name
 description: Brief description of what this prompt does
 # Optional: Include arguments if prompt needs dynamic inputs
 arguments:
@@ -182,8 +189,9 @@ After creating the file, provide a summary:
 
 ### Created Prompt
 
-**File**: `prompts/[filename].md`
-**Name**: `[prompt-name]`
+**File**: `prompts/[namespace-name].md`
+**Name**: `[namespace-name]` (registers as `[namespace:name]`)
+**Namespace**: `[namespace]`
 **Type**: [Simple/Complex]
 **Sections**: [List included sections]
 
@@ -203,7 +211,7 @@ After creating the file, provide a summary:
 
 ```yaml
 ---
-name: python-code-review
+name: code-review-python
 description: Review Python code for quality issues and best practices
 ---
 
@@ -250,7 +258,9 @@ Format your response with:
 Before finalizing a prompt, verify:
 
 - [ ] YAML frontmatter is complete and valid
-- [ ] Name follows naming conventions (alphanumeric, dashes, underscores, spaces, max 100 chars)
+- [ ] Name follows namespace convention: `{namespace}-{name}` format (e.g., `git-assistant`, `code-review-python`)
+- [ ] Namespace is appropriate for the domain (git, jira, code, security, prompt, docs, etc.)
+- [ ] Name uses alphanumeric, dashes, underscores, or spaces only (max 100 chars)
 - [ ] Description is concise (max 200 characters)
 - [ ] If using arguments: names are valid, descriptions clear, `{placeholders}` used in content
 - [ ] Context clearly defines the role or perspective
@@ -261,7 +271,7 @@ Before finalizing a prompt, verify:
 - [ ] Output format is clearly defined
 - [ ] Constraints and boundaries are explicit
 - [ ] File will be saved in `prompts/` directory (top-level only, no subdirectories)
-- [ ] Filename matches the prompt name (kebab-case)
+- [ ] Filename matches the prompt name (kebab-case: `{namespace}-{name}.md`)
 - [ ] No symlinks used
 
 ## Notes

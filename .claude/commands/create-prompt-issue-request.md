@@ -35,11 +35,17 @@ Ask the user questions in three groups to make the process faster and more effic
   <questions>
     <question id="prompt_name" required="true">
       <label>Prompt Name</label>
-      <prompt>What should this prompt be called?</prompt>
+      <prompt>What should this prompt be called? (Use format: {namespace}-{name}, e.g., git-assistant, jira-description, code-review-python)</prompt>
       <validation>
+        - Must follow namespace convention: {namespace}-{name} format
+        - Choose appropriate namespace: git, jira, code, security, prompt, docs, etc.
         - Alphanumeric, dashes, underscores, or spaces only
         - Maximum 100 characters
       </validation>
+      <guidance>
+        The namespace (first part before hyphen) categorizes the prompt by domain.
+        Examples: git-assistant, jira-create-issue, code-review-python, security-audit
+      </guidance>
     </question>
 
     <question id="description" required="true">
@@ -72,6 +78,8 @@ Ask the user questions in three groups to make the process faster and more effic
   </questions>
 
   <post_validation>
+    - Check prompt name follows namespace convention: must contain at least one hyphen (namespace-name format)
+    - Validate namespace is appropriate for domain (git, jira, code, security, prompt, docs, etc.)
     - Check prompt name: length ≤ 100 chars and only alphanumeric, dashes, underscores, or spaces
     - Check description: length ≤ 200 chars
     - If invalid, ask user to revise the specific field(s)
@@ -206,7 +214,8 @@ After successful creation, provide issue details and URL.
 - Format issue body with proper markdown headers for each field
 - Apply labels specified in the template YAML
 - If user skips optional fields, proceed without them
-- Validate prompt name follows naming conventions (alphanumeric, dashes, underscores, spaces only, max 100 chars)
+- Validate prompt name follows namespace convention ({namespace}-{name} format with appropriate namespace)
+- Validate prompt name uses alphanumeric, dashes, underscores, spaces only (max 100 chars)
 - Validate description is max 200 characters
 
 ## Workflow
@@ -215,8 +224,10 @@ After successful creation, provide issue details and URL.
 2. Read the prompt request template from `.github/ISSUE_TEMPLATE/prompt_request.yml`
 3. Extract required and optional fields from the template
 4. **Group 1**: Ask for basic information (name, description, complexity, priority) in one request
-   - Validate prompt name (format and length ≤ 100 chars)
-   - Validate description (length ≤ 200 chars)
+   - Validate prompt name follows namespace convention ({namespace}-{name} format)
+   - Validate namespace is appropriate (git, jira, code, security, prompt, docs, etc.)
+   - Validate prompt name format and length ≤ 100 chars
+   - Validate description length ≤ 200 chars
    - If invalid, ask user to revise specific fields
 5. **Group 2**: Ask for purpose and implementation details (purpose, context/role, instructions, output format) in one request
 6. **Group 3**: Ask for optional details (constraints, examples, additional context) in one request
@@ -276,13 +287,13 @@ Troubleshooting:
 **Group 1 - Basic Information**
 
 Please provide:
-1. **Prompt Name**: What should this prompt be called? (alphanumeric, dashes, underscores, spaces only, max 100 chars)
+1. **Prompt Name**: What should this prompt be called? (Use format: {namespace}-{name}, e.g., code-review-python, git-assistant)
 2. **Description**: Brief description (max 200 characters)
 3. **Complexity**: Simple or Complex?
 4. **Priority**: Low, Medium, High, or Critical?
 
 **User**:
-1. Python Code Review
+1. code-review-python
 2. Review Python code for quality issues and best practices. Checks PEP 8 compliance and suggests improvements.
 3. Simple
 4. Medium
@@ -318,7 +329,7 @@ These are optional. Please provide any of the following, or type "skip":
 
 ✓ Prompt Request Issue Created Successfully
 
-Issue #15: [Prompt Request]: Python Code Review
+Issue #15: [Prompt Request]: code-review-python
 Repository: marcmodin/mcp-prompt-server
 Type: Prompt Request
 Complexity: Simple
@@ -330,7 +341,8 @@ Labels: prompt, priority-medium
 Next Steps:
 • A developer or AI agent will review your prompt request
 • Implementation will follow the guidelines in the issue template
-• The prompt will be created in prompts/python-code-review.md
+• The prompt will be created in prompts/code-review-python.md
+• It will register as code:review-python in MCP
 
 ### Example 2: Complex Security Audit Prompt (Chunked Approach)
 
@@ -339,7 +351,7 @@ Next Steps:
 **Group 1 - Basic Information**
 
 Please provide:
-1. **Prompt Name**: What should this prompt be called? (alphanumeric, dashes, underscores, spaces only, max 100 chars)
+1. **Prompt Name**: What should this prompt be called? (Use format: {namespace}-{name}, e.g., security-audit-workflow)
 2. **Description**: Brief description (max 200 characters)
 3. **Complexity**: Simple or Complex?
 4. **Priority**: Low, Medium, High, or Critical?
@@ -397,3 +409,4 @@ Next Steps:
 • A developer or AI agent will review your prompt request
 • Implementation will follow the guidelines in the issue template
 • The prompt will be created in prompts/security-audit-workflow.md
+• It will register as security:audit-workflow in MCP
