@@ -304,7 +304,7 @@ For local development:
 
 ```yaml
 ---
-name: prompt-name
+name: namespace-prompt-name
 description: Brief description of what this prompt does
 ---
 
@@ -317,11 +317,29 @@ The actual prompt content goes here. This can include:
 - Lists and other markdown features
 ```
 
+**Namespace Convention:**
+
+Prompts follow a namespace convention where the name uses the format `{namespace}-{name}`. The first hyphen is automatically converted to a colon when registering with MCP.
+
+Examples:
+- `git-assistant` → registers as `git:assistant`
+- `jira-description` → registers as `jira:description`
+- `code-review-python` → registers as `code:review-python`
+- `security-audit-workflow` → registers as `security:audit-workflow`
+
+Common namespaces:
+- `git-*` — Git operations
+- `jira-*` — Jira integration
+- `code-*` — Code analysis
+- `security-*` — Security audits
+- `prompt-*` — Prompt engineering
+- `docs-*` — Documentation
+
 ### Frontmatter Fields
 
 | Field | Required | Type | Max Length | Description |
 |-------|----------|------|------------|-------------|
-| `name` | Yes | String | 100 chars | Unique prompt identifier (alphanumeric, dash, underscore, space) |
+| `name` | Yes | String | 100 chars | Namespaced prompt identifier using `{namespace}-{name}` format (alphanumeric, dash, underscore, space) |
 | `description` | Yes | String | 200 chars | Human-readable description for MCP clients (2-3 sentences) |
 | `arguments` | No | List[Object] | - | Optional list of prompt arguments (see below) |
 
@@ -331,7 +349,7 @@ Prompts can define arguments for dynamic content substitution:
 
 ```yaml
 ---
-name: code-explainer
+name: code-explain-snippet
 description: Explains code with optional difficulty level
 arguments:
   - name: code

@@ -30,22 +30,35 @@ npx @modelcontextprotocol/inspector uv --directory [path] run mcp-prompt-server
 
 ### Adding New Prompts
 
+**Namespace Convention:**
+
+All prompts must follow the namespace convention: `{namespace}-{name}` format (e.g., `git-assistant`, `code-review-python`). The first hyphen is automatically converted to a colon when registering with MCP (e.g., `git:assistant`).
+
+Choose an appropriate namespace based on the domain:
+- `git-*` — Git operations
+- `jira-*` — Jira integration
+- `code-*` — Code analysis
+- `security-*` — Security audits
+- `prompt-*` — Prompt engineering
+- `docs-*` — Documentation
+
 There are three approaches for adding new prompts:
 
 #### Approach 1: Direct Implementation (Recommended for Contributors)
 
 1. Open project in Claude Code
 2. Use `/create-prompt` (claude command) and follow instructions to create a new prompt
-3. Restart Claude to reload the MCP server with the new prompt
-4. Test the prompt execution thoroughly
-5. Commit changes using the git workflow
+3. The assistant will guide you to choose an appropriate namespace
+4. Restart Claude to reload the MCP server with the new prompt
+5. Test the prompt execution thoroughly
+6. Commit changes using the git workflow
 
 #### Approach 2: AI-Assisted Prompt Request (Recommended for Users)
 
 Use the conversational prompt request assistant:
 
 1. Use `/create-prompt-issue-request` (claude command) in Claude Code
-2. The assistant will guide you through providing all necessary information
+2. The assistant will guide you through providing all necessary information, including namespace selection
 3. A GitHub issue will be created automatically with all details filled in
 4. A developer or AI agent can then implement the prompt based on the request
 
