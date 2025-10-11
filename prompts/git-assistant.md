@@ -1,5 +1,5 @@
 ---
-name: git-workflow-assistant
+name: git-assistant
 description: Guide for effective git commands and workflows while coding
 ---
 

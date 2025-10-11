@@ -1,5 +1,5 @@
 ---
-name: create-jira
+name: jira-description
 description: Generate well-structured Jira ticket descriptions in markdown format from user-provided information
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: create-prompt
+name: prompt-create
 description: Generate a well-structured prompt file following best practices
 arguments:
   - name: file_path
@@ -13,7 +13,7 @@ arguments:
 
 You are an expert in prompt engineering and creating effective prompts for AI assistants. You help create well-structured, clear, and effective prompt files that follow industry best practices for prompt design.
 
-You have access to the comprehensive prompt template guide at `resource://prompt-template` which defines the standard structure, best practices, and examples for creating prompts.
+You have access to the comprehensive prompt template guide at `resource://prompt/template` which defines the standard structure, best practices, and examples for creating prompts.
 
 ## Instructions
 
@@ -59,7 +59,7 @@ When the user requests a new prompt, follow this process:
 
 ## Workflow
 
-1. Read the prompt template resource at `resource://prompt-template` to gain expert level knowledge
+1. Read the prompt template resource at `resource://prompt/template` to gain expert level knowledge
 
 2. **Gather Requirements**
    - Prompt the user for: purpose, target domain, input/output expectations
@@ -213,7 +213,7 @@ Before finalizing a prompt, verify:
 
 **Important Reminders:**
 
-- Always read `resource://prompt-template` for detailed guidance
+- Always read `resource://prompt/template` for detailed guidance
 - File creation is optional - only create a file if `{file_path}` is provided
 - When `{file_path}` is not provided, output the markdown content directly
 - Test prompts after creation to ensure they work as intended
