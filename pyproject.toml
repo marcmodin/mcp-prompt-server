@@ -1,6 +1,6 @@
 [project]
 name = "mcp-prompt-server"
-version = "0.2.0"
+version = "0.3.0"
 description = "MCP server that exposes markdown files as prompts"
 readme = "README.md"
 authors = [
