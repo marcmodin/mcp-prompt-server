@@ -28,7 +28,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # Python release type for proper version management
           release-type: python
-
+      
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          fetch-depth: 0
+        
       - name: tag major and minor versions
         if: ${{ steps.release.outputs.release_created }}
         run: |
