@@ -2,20 +2,19 @@ name: Release Please
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'src/**'
-  #     - 'prompts/**'
-  #     - 'resources/**'
-  #     - '.github/workflows/release-please.yml'
-  #     - 'pyproject.toml'
-  #     - '.python-version'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'prompts/**'
+      - 'resources/**'
+      - '.github/workflows/release-please.yml'
+      - 'pyproject.toml'
+      - '.python-version'
 
 permissions:
   contents: write
-  issues: write
   pull-requests: write
 
 jobs:
@@ -23,33 +22,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
-        id: release-please
+        id: release
         with:
           # Use default GITHUB_TOKEN
           token: ${{ secrets.GITHUB_TOKEN }}
           # Python release type for proper version management
           release-type: python
-          skip-github-pull-request: true
-      
-      - uses: actions/checkout@v4
-      - name: Debug Release Info
+
+      - name: tag major and minor versions
+        if: ${{ steps.release.outputs.release_created }}
         run: |
-          echo "Release created: ${{ steps.release-please.outputs.release_created }}"
-          echo "New tag: ${{ steps.release-please.outputs.new_tag }}"
-          echo "Major: ${{ steps.release-please.outputs.major }}"
-          echo "Minor: ${{ steps.release-please.outputs.minor }}"
-          echo "Patch: ${{ steps.release-please.outputs.patch }}"
-      # - name: tag major and minor versions
-      #   if: ${{ steps.release.outputs.release_created }}
-      #   run: |
-      #     git config user.name github-actions[bot]
-      #     git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-      #     git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/marcmodin/mcp-prompt-server.git"
-      #     git tag -d v${{ steps.release.outputs.major }} || true
-      #     git tag -d v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-      #     git push origin :v${{ steps.release.outputs.major }} || true
-      #     git push origin :v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-      #     git tag -a v${{ steps.release.outputs.major }} -m "Release v${{ steps.release.outputs.major }}"
-      #     git tag -a v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} -m "Release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}"
-      #     git push origin v${{ steps.release.outputs.major }}
-      #     git push origin v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/marcmodin/mcp-prompt-server.git"
+          git tag -d v${{ steps.release.outputs.major }} || true
+          git tag -d v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
+          git push origin :v${{ steps.release.outputs.major }} || true
+          git push origin :v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
+          git tag -a v${{ steps.release.outputs.major }} -m "Release v${{ steps.release.outputs.major }}"
+          git tag -a v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} -m "Release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}"
+          git push origin v${{ steps.release.outputs.major }}
+          git push origin v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
