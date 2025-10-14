@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/marcmodin/mcp-prompt-server/compare/v0.3.0...v0.3.1) (2025-10-14)
+
+
+### Bug Fixes
+
+* add checkout step for release process ([f4120e7](https://github.com/marcmodin/mcp-prompt-server/commit/f4120e79f20410f70719b063868bdfdee3bd63ff))
+
 ## [0.3.0](https://github.com/marcmodin/mcp-prompt-server/compare/v0.2.0...v0.3.0) (2025-10-14)
 
 
